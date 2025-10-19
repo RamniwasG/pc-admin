@@ -1,25 +1,3 @@
-/*
-Admin Dashboard - Sidebar + CRUD
-Tech: React (single-file), Tailwind CSS, lucide-react, axios, axios-mock-adapter
-
-Features:
-- Left sidebar navigation: Categories, Subcategories, Products, Orders
-- Right main panel shows List and Add/Edit forms for the selected resource
-- Fully functional mock backend implemented with axios-mock-adapter and persisted to localStorage (so no external server required)
-- Uses Tailwind for styling and lucide-react for icons
-- Axios abstraction included; replace mock adapter with real API baseURL easily
-
-Usage
-1. Put this file into a React project (CRA or Next.js page). Save as AdminDashboard.jsx and import into your app.
-2. Install dependencies:
-   npm install axios axios-mock-adapter lucide-react
-3. Ensure Tailwind CSS is set up in the project.
-4. Start the app — you'll have a working admin dashboard with mock API backed by localStorage.
-
-Notes
-- To connect a real backend, remove or disable the `setupMockAdapter()` call and set axios.defaults.baseURL to your API base URL.
-- The mock persists data in localStorage under key `admin_dashboard_mock` so data survives reloads.
-*/
 "use client";
 import React, { useEffect, useMemo, useState } from "react";
 import axios from "axios";
@@ -52,14 +30,6 @@ function loadMockData() {
           { id: "cat1", name: "Clothing" },
           { id: "cat2", name: "Electronics" },
         ],
-        subcategories: [
-          { id: "sub1", name: "T-Shirts", categoryId: "cat1" },
-          { id: "sub2", name: "Laptops", categoryId: "cat2" },
-        ],
-        products: [
-          { id: "p1", title: "Basic Tee", price: 499, categoryId: "cat1", subcategoryId: "sub1" },
-        ],
-        orders: [],
       };
       localStorage.setItem(MOCK_LS_KEY, JSON.stringify(seed));
       return seed;
@@ -106,63 +76,6 @@ function setupMockAdapter() {
     state.products = state.products.map((p) => (p.categoryId === id ? { ...p, categoryId: "", subcategoryId: "" } : p));
     saveMockData(state);
     return [204];
-  });
-
-  // Subcategories
-  mock.onGet("/subcategories").reply(() => [200, state.subcategories]);
-  mock.onPost("/subcategories").reply((config) => {
-    const body = JSON.parse(config.data);
-    const item = { id: uid(), ...body };
-    state.subcategories.push(item);
-    saveMockData(state);
-    return [201, item];
-  });
-  mock.onPut(/\/subcategories\/.+/).reply((config) => {
-    const id = config.url.split("/").pop();
-    const body = JSON.parse(config.data);
-    state.subcategories = state.subcategories.map((s) => (s.id === id ? { ...s, ...body } : s));
-    saveMockData(state);
-    return [200, { id, ...body }];
-  });
-  mock.onDelete(/\/subcategories\/.+/).reply((config) => {
-    const id = config.url.split("/").pop();
-    state.subcategories = state.subcategories.filter((s) => s.id !== id);
-    state.products = state.products.map((p) => (p.subcategoryId === id ? { ...p, subcategoryId: "" } : p));
-    saveMockData(state);
-    return [204];
-  });
-
-  // Products
-  mock.onGet("/products").reply(() => [200, state.products]);
-  mock.onPost("/products").reply((config) => {
-    const body = JSON.parse(config.data);
-    const item = { id: uid(), ...body };
-    state.products.push(item);
-    saveMockData(state);
-    return [201, item];
-  });
-  mock.onPut(/\/products\/.+/).reply((config) => {
-    const id = config.url.split("/").pop();
-    const body = JSON.parse(config.data);
-    state.products = state.products.map((p) => (p.id === id ? { ...p, ...body } : p));
-    saveMockData(state);
-    return [200, { id, ...body }];
-  });
-  mock.onDelete(/\/products\/.+/).reply((config) => {
-    const id = config.url.split("/").pop();
-    state.products = state.products.filter((p) => p.id !== id);
-    saveMockData(state);
-    return [204];
-  });
-
-  // Orders (read-only seed + simple create)
-  mock.onGet("/orders").reply(() => [200, state.orders]);
-  mock.onPost("/orders").reply((config) => {
-    const body = JSON.parse(config.data);
-    const item = { id: uid(), ...body };
-    state.orders.push(item);
-    saveMockData(state);
-    return [201, item];
   });
 
   return mock;
@@ -215,7 +128,7 @@ function ResourceList({ title, items, onEdit, onDelete, renderSub }) {
 }
 
 // --- Main Admin Dashboard ---
-export default function AdminDashboard() {
+export default function CategoriesList() {
   const [active, setActive] = useState("categories"); // categories | subcategories | products | orders
 
   // local state for lists
@@ -232,16 +145,8 @@ export default function AdminDashboard() {
   async function fetchAll() {
     setLoading(true);
     try {
-      const [cats, subs, prods, ords] = await Promise.all([
-        axios.get("/categories").then((r) => r.data),
-        axios.get("/subcategories").then((r) => r.data),
-        axios.get("/products").then((r) => r.data),
-        axios.get("/orders").then((r) => r.data),
-      ]);
-      setCategories(cats);
-      setSubcategories(subs);
-      setProducts(prods);
-      setOrders(ords);
+      const { data } = await axios.get("/categories");
+      setCategories(data);
     } catch (e) {
       console.error(e);
       alert("Failed to load data");
@@ -270,44 +175,6 @@ export default function AdminDashboard() {
     fetchAll();
   }
 
-  // --- Subcategory actions ---
-  async function addSub(payload) {
-    const res = await axios.post("/subcategories", payload);
-    setSubcategories((s) => [...s, res.data]);
-  }
-  async function updateSub(id, payload) {
-    await axios.put(`/subcategories/${id}`, payload);
-    setSubcategories((s) => s.map((c) => (c.id === id ? { ...c, ...payload } : c)));
-  }
-  async function deleteSub(id) {
-    if (!confirm("Delete subcategory?")) return;
-    await axios.delete(`/subcategories/${id}`);
-    setSubcategories((s) => s.filter((c) => c.id !== id));
-    fetchAll();
-  }
-
-  // --- Products actions ---
-  async function addProduct(payload) {
-    const res = await axios.post("/products", payload);
-    setProducts((s) => [...s, res.data]);
-  }
-  async function updateProduct(id, payload) {
-    await axios.put(`/products/${id}`, payload);
-    setProducts((s) => s.map((p) => (p.id === id ? { ...p, ...payload } : p)));
-  }
-  async function deleteProduct(id) {
-    if (!confirm("Delete product?")) return;
-    await axios.delete(`/products/${id}`);
-    setProducts((s) => s.filter((p) => p.id !== id));
-  }
-
-  // --- Orders actions (read-only in this mock) ---
-  // create order (for testing)
-  async function createOrder(payload) {
-    const res = await axios.post("/orders", payload);
-    setOrders((s) => [...s, res.data]);
-  }
-
   // --- UI helper: render right panel per active ---
   function RightPanel() {
     switch (active) {
@@ -323,34 +190,6 @@ export default function AdminDashboard() {
             setEditing={setEditing}
           />
         );
-      case "subcategories":
-        return (
-          <ResourceManager
-            resource="subcategories"
-            items={subcategories}
-            extra={{ categories }}
-            onAdd={addSub}
-            onUpdate={updateSub}
-            onDelete={deleteSub}
-            editing={editing}
-            setEditing={setEditing}
-          />
-        );
-      case "products":
-        return (
-          <ResourceManager
-            resource="products"
-            items={products}
-            extra={{ categories, subcategories }}
-            onAdd={addProduct}
-            onUpdate={updateProduct}
-            onDelete={deleteProduct}
-            editing={editing}
-            setEditing={setEditing}
-          />
-        );
-      case "orders":
-        return <OrdersPanel orders={orders} onCreate={createOrder} />;
       default:
         return null;
     }
@@ -459,77 +298,7 @@ function ResourceManager({ resource, items, extra = {}, onAdd, onUpdate, onDelet
               </button>
             )}
           </div>
-
-          <form onSubmit={submit} className="space-y-3">
-            {isProduct ? (
-              <>
-                <input value={form.title || ""} onChange={(e) => setForm((f) => ({ ...f, title: e.target.value }))} placeholder="Title" className="w-full input px-3 py-2 border rounded" />
-                <input value={form.price || ""} onChange={(e) => setForm((f) => ({ ...f, price: e.target.value }))} placeholder="Price" className="w-full input px-3 py-2 border rounded" />
-
-                <select value={form.categoryId || ""} onChange={(e) => setForm((f) => ({ ...f, categoryId: e.target.value, subcategoryId: "" }))} className="w-full input px-3 py-2 border rounded">
-                  <option value="">Choose category</option>
-                  {extra.categories?.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
-                </select>
-
-                <select value={form.subcategoryId || ""} onChange={(e) => setForm((f) => ({ ...f, subcategoryId: e.target.value }))} className="w-full input px-3 py-2 border rounded" disabled={!form.categoryId}>
-                  <option value="">Choose subcategory</option>
-                  {extra.subcategories?.filter((s) => s.categoryId === form.categoryId).map((s) => <option key={s.id} value={s.id}>{s.name}</option>)}
-                </select>
-              </>
-            ) : isSub ? (
-              <>
-                <input value={form.name || ""} onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))} placeholder="Subcategory name" className="w-full input px-3 py-2 border rounded" />
-                <select value={form.categoryId || ""} onChange={(e) => setForm((f) => ({ ...f, categoryId: e.target.value }))} className="w-full input px-3 py-2 border rounded">
-                  <option value="">Choose category</option>
-                  {extra.categories?.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
-                </select>
-              </>
-            ) : (
-              <>
-                <input value={form.name || ""} onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))} placeholder="Category name" className="w-full input px-3 py-2 border rounded" />
-              </>
-            )}
-
-            <div className="flex gap-2">
-              <button type="submit" className="btn inline-flex items-center gap-2">
-                <Save className="h-4 w-4" />
-                <span>{editing ? "Update" : "Add"}</span>
-              </button>
-              <button type="button" onClick={() => { setForm(emptyForm); setEditing(null); }} className="btn-ghost inline-flex items-center gap-2">
-                <X className="h-4 w-4" />
-                <span>Clear</span>
-              </button>
-            </div>
-          </form>
         </div>
-      </div>
-    </div>
-  );
-}
-
-function OrdersPanel({ orders, onCreate }) {
-  return (
-    <div>
-      <div className="mb-4 flex items-center justify-between">
-        <h4 className="font-semibold">Orders</h4>
-        <button onClick={() => onCreate({ customer: "Test", total: 999, items: [] })} className="btn inline-flex items-center gap-2">
-          <PlusCircle className="h-4 w-4" />
-          <span>Create Test Order</span>
-        </button>
-      </div>
-
-      {orders.length === 0 && <div className="text-sm text-gray-500">No orders yet</div>}
-      <div className="space-y-3">
-        {orders.map((o) => (
-          <div key={o.id} className="border rounded p-3 bg-white">
-            <div className="flex items-center justify-between">
-              <div>
-                <div className="font-medium">Order {o.id}</div>
-                <div className="text-sm text-gray-500">Customer: {o.customer} • Total: ₹{o.total}</div>
-              </div>
-            </div>
-          </div>
-        ))}
       </div>
     </div>
   );
