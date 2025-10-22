@@ -1,9 +1,10 @@
 "use client";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { Eye, EyeOff, LogIn, ShieldCheck } from "lucide-react";
 import { useRouter } from "next/navigation"; // or useNavigate() if using React Router
 import Image from "next/image";
+import { getUserToken, setUserData, setUserToken } from "@/utils";
 
 const AdminLogin = () => {
   const router = useRouter();
@@ -18,6 +19,14 @@ const AdminLogin = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
 
+  // Auto login if token already exist
+  useEffect(() => {
+    const token = getUserToken();
+    if(token) {
+      router.push("/dashboard")
+    }
+  }, [])
+
   // Handle input change
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -30,10 +39,12 @@ const AdminLogin = () => {
     setLoading(true);
 
     try {
-      const res = await axios.post("/api/auth/admin-login", formData);
+      const res = await axios.post("http://localhost:5002/api/admin-auth/login", formData);
 
       // Example response: { token, user: { role } }
-      const { user } = res.data;
+      const { token, user } = res.data;
+      setUserToken(token);
+      setUserData(user);
 
       if (user.role === "admin") {
         router.push("/dashboard");

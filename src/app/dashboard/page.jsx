@@ -16,6 +16,7 @@ import {
   ResponsiveContainer,
 } from "recharts";
 import { useRouter } from "next/navigation";
+import UserProfileDropdown from "@/components/user-profile";
 
 const Dashboard = () => {
   // --- Dashboard data (replace with real API data later)
@@ -69,9 +70,12 @@ const Dashboard = () => {
   return (
     <div className="min-h-screen bg-gray-50 p-6">
       {/* Header */}
-      <h1 className="text-3xl font-semibold text-gray-800 mb-8">
-        Dashboard
-      </h1>
+      <div className="flex justify-between items-center gap-3">
+        <h1 className="text-3xl font-semibold text-gray-800 mb-8">
+          Dashboard
+        </h1>
+        <UserProfileDropdown />
+      </div>
 
       {/* Summary Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
