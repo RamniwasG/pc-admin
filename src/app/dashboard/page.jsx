@@ -17,7 +17,7 @@ import {
 } from "recharts";
 import { useRouter } from "next/navigation";
 import { getUserToken } from "@/utils";
-import UserProfileDropdown from "@/components/user-profile";
+import UserProfileDropdown from "@/components/user-profile-dropdown";
 import api from "@/api/axios-instance";
 
 const Dashboard = () => {
