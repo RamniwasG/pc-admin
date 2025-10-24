@@ -1,5 +1,5 @@
 "use client";
-import React from "react";
+import React, { useEffect} from "react";
 import {
   Package,
   Tags,
@@ -17,6 +17,7 @@ import {
 } from "recharts";
 import { useRouter } from "next/navigation";
 import UserProfileDropdown from "@/components/user-profile";
+import { getUserToken } from "@/utils";
 
 const Dashboard = () => {
   // --- Dashboard data (replace with real API data later)
@@ -67,6 +68,15 @@ const Dashboard = () => {
 
   const router = useRouter();
 
+// Auto login if token already exist
+  useEffect(() => {
+    const token = getUserToken();
+    if(token) {
+      router.push("/dashboard")
+    }
+  }, [])
+
+
   return (
     <div className="min-h-screen bg-gray-50 p-6">
       {/* Header */}
@@ -83,8 +93,9 @@ const Dashboard = () => {
           <div
             key={index}
             className="bg-white shadow-sm border border-gray-100 rounded-xl p-5 flex items-center justify-between hover:shadow-lg cursor-pointer transition"
+            onClick={() => router.push(`/dashboard/manage`)}
           >
-            <div onClick={() => router.push(`/dashboard/manage`)}>
+            <div>
               <p className="text-xl">{item.label}</p>
               <h2 className="text-2xl font-bold text-gray-600">
                 {item.value}
@@ -107,7 +118,7 @@ const Dashboard = () => {
             Data Distribution
           </h3>
           <div className="w-full h-80">
-            <ResponsiveContainer>
+            <ResponsiveContainer minWidth={0} minHeight={0}>
               <PieChart>
                 <Pie
                   data={pieData}

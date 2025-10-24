@@ -71,6 +71,7 @@ const AdminLogin = () => {
                 height={300}
                 className="w-[400px] h-[400px] rounded-full"
                 alt="app logo"
+                priority={true}
             />
         </div>
         <div className="w-full max-w-md bg-white shadow-lg rounded-2xl p-8">

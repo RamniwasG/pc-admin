@@ -14,3 +14,8 @@ export const getUserData = () => {
 export const setUserData = (user) => {
     return localStorage.setItem('userData', JSON.stringify(user))
 }
+
+export const clearLoginCredentials = () => {
+    localStorage.removeItem('token');
+    localStorage.removeItem('userData');
+}

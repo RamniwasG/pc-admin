@@ -1,28 +1,27 @@
 /*
 Admin Dashboard - Sidebar + CRUD
-Tech: React (single-file), Tailwind CSS, lucide-react, axios, axios-mock-adapter
+Tech: React (single-file), Tailwind CSS, lucide-react, api, api-mock-adapter
 
 Features:
 - Left sidebar navigation: Categories, Subcategories, Products, Orders
 - Right main panel shows List and Add/Edit forms for the selected resource
-- Fully functional mock backend implemented with axios-mock-adapter and persisted to localStorage (so no external server required)
+- Fully functional mock backend implemented with api-mock-adapter and persisted to localStorage (so no external server required)
 - Uses Tailwind for styling and lucide-react for icons
-- Axios abstraction included; replace mock adapter with real API baseURL easily
+- api abstraction included; replace mock adapter with real API baseURL easily
 
 Usage
 1. Put this file into a React project (CRA or Next.js page). Save as AdminDashboard.jsx and import into your app.
 2. Install dependencies:
-   npm install axios axios-mock-adapter lucide-react
+   npm install api api-mock-adapter lucide-react
 3. Ensure Tailwind CSS is set up in the project.
 4. Start the app — you'll have a working admin dashboard with mock API backed by localStorage.
 
 Notes
-- To connect a real backend, remove or disable the `setupMockAdapter()` call and set axios.defaults.baseURL to your API base URL.
+- To connect a real backend, remove or disable the `setupMockAdapter()` call and set api.defaults.baseURL to your API base URL.
 - The mock persists data in localStorage under key `admin_dashboard_mock` so data survives reloads.
 */
 "use client";
 import React, { useEffect, useMemo, useState } from "react";
-import axios from "axios";
 import MockAdapter from "axios-mock-adapter";
 import {
   Grid,
@@ -38,6 +37,7 @@ import {
   Save,
   X,
 } from "lucide-react";
+import api from "@/api/axios-instance";
 
 // --- Mock backend setup (uses localStorage) ---
 const MOCK_LS_KEY = "admin_dashboard_mock";
@@ -75,7 +75,7 @@ function saveMockData(data) {
 }
 
 function setupMockAdapter() {
-  const mock = new MockAdapter(axios, { delayResponse: 250 });
+  const mock = new MockAdapter(api, { delayResponse: 250 });
   // initialize
   let state = loadMockData();
 
@@ -94,13 +94,13 @@ function setupMockAdapter() {
   mock.onPut(/\/categories\/.+/).reply((config) => {
     const id = config.url.split("/").pop();
     const body = JSON.parse(config.data);
-    state.categories = state.categories.map((c) => (c.id === id ? { ...c, ...body } : c));
+    state.categories = state.categories.map((c) => (c._id === id ? { ...c, ...body } : c));
     saveMockData(state);
     return [200, { id, ...body }];
   });
   mock.onDelete(/\/categories\/.+/).reply((config) => {
     const id = config.url.split("/").pop();
-    state.categories = state.categories.filter((c) => c.id !== id);
+    state.categories = state.categories.filter((c) => c._id !== id);
     // also detach subcategories & products
     state.subcategories = state.subcategories.map((s) => (s.categoryId === id ? { ...s, categoryId: "" } : s));
     state.products = state.products.map((p) => (p.categoryId === id ? { ...p, categoryId: "", subcategoryId: "" } : p));
@@ -120,13 +120,13 @@ function setupMockAdapter() {
   mock.onPut(/\/subcategories\/.+/).reply((config) => {
     const id = config.url.split("/").pop();
     const body = JSON.parse(config.data);
-    state.subcategories = state.subcategories.map((s) => (s.id === id ? { ...s, ...body } : s));
+    state.subcategories = state.subcategories.map((s) => (s._id === id ? { ...s, ...body } : s));
     saveMockData(state);
     return [200, { id, ...body }];
   });
   mock.onDelete(/\/subcategories\/.+/).reply((config) => {
     const id = config.url.split("/").pop();
-    state.subcategories = state.subcategories.filter((s) => s.id !== id);
+    state.subcategories = state.subcategories.filter((s) => s._id !== id);
     state.products = state.products.map((p) => (p.subcategoryId === id ? { ...p, subcategoryId: "" } : p));
     saveMockData(state);
     return [204];
@@ -144,13 +144,13 @@ function setupMockAdapter() {
   mock.onPut(/\/products\/.+/).reply((config) => {
     const id = config.url.split("/").pop();
     const body = JSON.parse(config.data);
-    state.products = state.products.map((p) => (p.id === id ? { ...p, ...body } : p));
+    state.products = state.products.map((p) => (p._id === id ? { ...p, ...body } : p));
     saveMockData(state);
     return [200, { id, ...body }];
   });
   mock.onDelete(/\/products\/.+/).reply((config) => {
     const id = config.url.split("/").pop();
-    state.products = state.products.filter((p) => p.id !== id);
+    state.products = state.products.filter((p) => p._id !== id);
     saveMockData(state);
     return [204];
   });
@@ -169,10 +169,10 @@ function setupMockAdapter() {
 }
 
 // call the mock setup. Remove this if you will use a real backend.
-setupMockAdapter();
+// setupMockAdapter();
 
-// --- axios defaults ---
-axios.defaults.baseURL = "/"; // change to your API base when using real backend
+// --- api defaults ---
+// api.defaults.baseURL = "/"; // change to your API base when using real backend
 
 // --- Reusable components ---
 const SidebarButton = ({ active, onClick, icon: Icon, label }) => (
@@ -180,35 +180,39 @@ const SidebarButton = ({ active, onClick, icon: Icon, label }) => (
     onClick={onClick}
     className={`w-full text-left flex items-center gap-3 px-4 py-2 rounded-md hover:bg-gray-100 ${active ? "bg-gray-100 font-semibold" : ""}`}
   >
-    <Icon className="h-5 w-5" />
-    <span className="text-sm">{label}</span>
+    <Icon size={24} className="h-6 w-6" />
+    <span className="text-md">{label}</span>
   </button>
 );
 
-function ResourceList({ title, items, onEdit, onDelete, renderSub }) {
+function ResourceList({ loading, title, items, onEdit, onDelete, renderSub }) {
   return (
     <div className="space-y-2">
       <div className="flex items-center justify-between">
         <h4 className="font-semibold">{title}</h4>
       </div>
       <div className="space-y-2">
-        {items.length === 0 && <div className="text-sm text-gray-500">No items</div>}
-        {items.map((it) => (
-          <div key={it.id} className="flex items-center justify-between border rounded p-2 bg-white">
-            <div>
-              <div className="font-medium">{it.name || it.title || it.id}</div>
-              {renderSub && <div className="text-xs text-gray-500">{renderSub(it)}</div>}
+        {loading && <div className="text-sm text-gray-500">Loading...</div>}
+        {!loading && items.length === 0 && <div className="text-sm text-gray-500">No items</div>}
+        {items.length > 0 && items.map((it) => {
+          const value = renderSub(it);
+          return (
+            <div key={it._id} className="flex items-center justify-between border rounded p-2 bg-white">
+              <div>
+                <div className="font-medium">{it.name || it.title || it._id}</div>
+                {renderSub && value && <div className="text-xs font-bold text-white bg-green-500 rounded p-1">{renderSub(it)}</div>}
+              </div>
+              <div className="flex items-center gap-2">
+                <button onClick={() => onEdit(it)} className="p-1 hover:bg-gray-100 rounded">
+                  <Edit2 className="h-4 w-4" />
+                </button>
+                <button onClick={() => onDelete(it)} className="p-1 hover:bg-gray-100 rounded">
+                  <Trash2 className="h-4 w-4 text-red-500" />
+                </button>
+              </div>
             </div>
-            <div className="flex items-center gap-2">
-              <button onClick={() => onEdit(it)} className="p-1 hover:bg-gray-100 rounded">
-                <Edit2 className="h-4 w-4" />
-              </button>
-              <button onClick={() => onDelete(it)} className="p-1 hover:bg-gray-100 rounded">
-                <Trash2 className="h-4 w-4 text-red-500" />
-              </button>
-            </div>
-          </div>
-        ))}
+          )}
+        )}
       </div>
     </div>
   );
@@ -232,16 +236,17 @@ export default function AdminDashboard({ }) {
   async function fetchAll() {
     setLoading(true);
     try {
-      const [cats, subs, prods, ords] = await Promise.all([
-        axios.get("/categories").then((r) => r.data),
-        axios.get("/subcategories").then((r) => r.data),
-        axios.get("/products").then((r) => r.data),
-        axios.get("/orders").then((r) => r.data),
+      // const { data } = await api.get("/categories/getAll");
+      const [cats, subs] = await Promise.all([
+        api.get("/categories/getAll").then((r) => r.data),
+        api.get("/subcategories/getAll").then((r) => r.data),
+        // api.get("/products/getAll").then((r) => r.data),
+        // api.get("/orders/getAll").then((r) => r.data),
       ]);
       setCategories(cats);
       setSubcategories(subs);
-      setProducts(prods);
-      setOrders(ords);
+      // setProducts(prods);
+      // setOrders(ords);
     } catch (e) {
       console.error(e);
       alert("Failed to load data");
@@ -255,56 +260,57 @@ export default function AdminDashboard({ }) {
 
   // --- Category actions ---
   async function addCategory(payload) {
-    const res = await axios.post("/categories", payload);
+    const res = await api.post("/categories/add", payload);
     setCategories((s) => [...s, res.data]);
   }
   async function updateCategory(id, payload) {
-    await axios.put(`/categories/${id}`, payload);
-    setCategories((s) => s.map((c) => (c.id === id ? { ...c, ...payload } : c)));
+    await api.put(`/categories/${id}`, payload);
+    setCategories((s) => s.map((c) => (c._id === id ? { ...c, ...payload } : c)));
   }
   async function deleteCategory(id) {
     if (!confirm("Delete category?")) return;
-    await axios.delete(`/categories/${id}`);
-    setCategories((s) => s.filter((c) => c.id !== id));
+    await api.delete(`/categories/${id}`);
+    setCategories((s) => s.filter((c) => c._id !== id));
     // refresh dependant lists
     fetchAll();
   }
 
   // --- Subcategory actions ---
   async function addSub(payload) {
-    const res = await axios.post("/subcategories", payload);
+    const res = await api.post("/subcategories/add", payload);
     setSubcategories((s) => [...s, res.data]);
   }
   async function updateSub(id, payload) {
-    await axios.put(`/subcategories/${id}`, payload);
-    setSubcategories((s) => s.map((c) => (c.id === id ? { ...c, ...payload } : c)));
+    const payloadData = { name: payload.name, categoryId: typeof payload.category === "string" ? payload.category : payload.category._id };
+    await api.put(`/subcategories/${id}`, payloadData);
+    setSubcategories((s) => s.map((c) => (c._id === id ? { ...c, ...payload } : c)));
   }
   async function deleteSub(id) {
     if (!confirm("Delete subcategory?")) return;
-    await axios.delete(`/subcategories/${id}`);
-    setSubcategories((s) => s.filter((c) => c.id !== id));
+    await api.delete(`/subcategories/${id}`);
+    setSubcategories((s) => s.filter((c) => c._id !== id));
     fetchAll();
   }
 
   // --- Products actions ---
   async function addProduct(payload) {
-    const res = await axios.post("/products", payload);
+    const res = await api.post("/products/add", payload);
     setProducts((s) => [...s, res.data]);
   }
   async function updateProduct(id, payload) {
-    await axios.put(`/products/${id}`, payload);
-    setProducts((s) => s.map((p) => (p.id === id ? { ...p, ...payload } : p)));
+    await api.put(`/products/${id}`, payload);
+    setProducts((s) => s.map((p) => (p._id === id ? { ...p, ...payload } : p)));
   }
   async function deleteProduct(id) {
     if (!confirm("Delete product?")) return;
-    await axios.delete(`/products/${id}`);
-    setProducts((s) => s.filter((p) => p.id !== id));
+    await api.delete(`/products/${id}`);
+    setProducts((s) => s.filter((p) => p._id !== id));
   }
 
   // --- Orders actions (read-only in this mock) ---
   // create order (for testing)
   async function createOrder(payload) {
-    const res = await axios.post("/orders", payload);
+    const res = await api.post("/orders", payload);
     setOrders((s) => [...s, res.data]);
   }
 
@@ -315,6 +321,7 @@ export default function AdminDashboard({ }) {
         return (
           <ResourceManager
             resource="categories"
+            loading={loading}
             items={categories}
             onAdd={addCategory}
             onUpdate={updateCategory}
@@ -327,6 +334,7 @@ export default function AdminDashboard({ }) {
         return (
           <ResourceManager
             resource="subcategories"
+            loading={loading}
             items={subcategories}
             extra={{ categories }}
             onAdd={addSub}
@@ -340,6 +348,7 @@ export default function AdminDashboard({ }) {
         return (
           <ResourceManager
             resource="products"
+            loading={loading}
             items={products}
             extra={{ categories, subcategories }}
             onAdd={addProduct}
@@ -358,12 +367,12 @@ export default function AdminDashboard({ }) {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <div className="max-w-7xl mx-auto p-4 md:p-6 grid grid-cols-12 gap-6">
+      <div className="max-w-7xl mx-auto p-4 md:p-4 grid grid-cols-12 gap-6">
         {/* Left sidebar */}
-        <aside className="col-span-12 md:col-span-3 lg:col-span-2 bg-white rounded-lg shadow p-3">
+        <aside className="col-span-12 md:col-span-4 lg:col-span-2 bg-white rounded-lg shadow p-3">
           <div className="mb-4 flex items-center gap-2">
             <Grid className="h-6 w-6" />
-            <h2 className="text-lg font-semibold">Admin</h2>
+            <h2 className="text-2xl font-semibold">Admin</h2>
           </div>
 
           <nav className="space-y-2">
@@ -377,7 +386,7 @@ export default function AdminDashboard({ }) {
         </aside>
 
         {/* Right main panel */}
-        <main className="col-span-12 md:col-span-9 lg:col-span-10">
+        <main className="col-span-12 md:col-span-8 lg:col-span-10">
           <div className="bg-white rounded-lg shadow p-4">
             <div className="flex items-center justify-between mb-4">
               <h3 className="text-lg font-semibold capitalize">{active}</h3>
@@ -393,14 +402,14 @@ export default function AdminDashboard({ }) {
 }
 
 // --- Resource Manager: generic for categories/subcategories/products ---
-function ResourceManager({ resource, items, extra = {}, onAdd, onUpdate, onDelete, editing, setEditing }) {
+function ResourceManager({ loading, resource, items, extra = {}, onAdd, onUpdate, onDelete, editing, setEditing }) {
   // resource: 'categories' | 'subcategories' | 'products'
   const isProduct = resource === "products";
   const isSub = resource === "subcategories";
 
   const emptyForm = useMemo(() => {
     if (isProduct) return { title: "", price: "", categoryId: "", subcategoryId: "" };
-    if (isSub) return { name: "", categoryId: "" };
+    if (isSub) return { name: "", category: "" };
     return { name: "" };
   }, [isProduct, isSub]);
 
@@ -414,7 +423,7 @@ function ResourceManager({ resource, items, extra = {}, onAdd, onUpdate, onDelet
   async function submit(e) {
     e.preventDefault();
     if (editing) {
-      await onUpdate(editing.id, form);
+      await onUpdate(editing._id, form);
     } else {
       await onAdd(form);
     }
@@ -430,26 +439,28 @@ function ResourceManager({ resource, items, extra = {}, onAdd, onUpdate, onDelet
     <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
       <div className="md:col-span-2">
         <ResourceList
-          title={`${resource} list`}
+          // title={`${resource} list`}
+          loading={loading}
           items={items}
           onEdit={startEdit}
-          onDelete={(it) => onDelete(it.id)}
+          onDelete={(it) => onDelete(it._id)}
           renderSub={(it) => {
             if (isProduct) {
-              const cat = extra.categories?.find((c) => c.id === it.categoryId)?.name || "-";
-              const sub = extra.subcategories?.find((s) => s.id === it.subcategoryId)?.name || "-";
+              const cat = extra.categories?.find((c) => c._id === it.categoryId)?.name || "-";
+              const sub = extra.subcategories?.find((s) => s._id === it.subcategoryId)?.name || "-";
               return `${cat} / ${sub}`;
             }
             if (isSub) {
-              const cat = extra.categories?.find((c) => c.id === it.categoryId)?.name || "-";
-              return `Category: ${cat}`;
+              const catId = typeof it.category === "string" ? it.category : it.category?._id;
+              const cat = extra.categories?.find((c) => c._id === catId)?.name || "-";
+              return `${cat}`;
             }
             return null;
           }}
         />
       </div>
 
-      <div className="md:col-span-1">
+      <div className="md:col-span-1 mt-2">
         <div className="border rounded p-4 bg-gray-50">
           <div className="flex items-center justify-between mb-2">
             <h4 className="font-semibold">{editing ? "Edit" : "Add New"} {resource.replace(/s$/, "")}</h4>
@@ -468,20 +479,20 @@ function ResourceManager({ resource, items, extra = {}, onAdd, onUpdate, onDelet
 
                 <select value={form.categoryId || ""} onChange={(e) => setForm((f) => ({ ...f, categoryId: e.target.value, subcategoryId: "" }))} className="w-full input px-3 py-2 border rounded">
                   <option value="">Choose category</option>
-                  {extra.categories?.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
+                  {extra.categories?.map((c) => <option key={c._id} value={c._id}>{c.name}</option>)}
                 </select>
 
                 <select value={form.subcategoryId || ""} onChange={(e) => setForm((f) => ({ ...f, subcategoryId: e.target.value }))} className="w-full input px-3 py-2 border rounded" disabled={!form.categoryId}>
                   <option value="">Choose subcategory</option>
-                  {extra.subcategories?.filter((s) => s.categoryId === form.categoryId).map((s) => <option key={s.id} value={s.id}>{s.name}</option>)}
+                  {extra.subcategories?.filter((s) => s.categoryId === form.categoryId).map((s) => <option key={s._id} value={s._id}>{s.name}</option>)}
                 </select>
               </>
             ) : isSub ? (
               <>
                 <input value={form.name || ""} onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))} placeholder="Subcategory name" className="w-full input px-3 py-2 border rounded" />
-                <select value={form.categoryId || ""} onChange={(e) => setForm((f) => ({ ...f, categoryId: e.target.value }))} className="w-full input px-3 py-2 border rounded">
+                <select value={form.category || form.category?._id || ""} onChange={(e) => setForm((f) => ({ ...f, category: e.target.value }))} className="w-full input px-3 py-2 border rounded">
                   <option value="">Choose category</option>
-                  {extra.categories?.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
+                  {extra.categories?.map((c) => <option key={c._id} value={c._id}>{c.name}</option>)}
                 </select>
               </>
             ) : (
@@ -521,10 +532,10 @@ function OrdersPanel({ orders, onCreate }) {
       {orders.length === 0 && <div className="text-sm text-gray-500">No orders yet</div>}
       <div className="space-y-3">
         {orders.map((o) => (
-          <div key={o.id} className="border rounded p-3 bg-white">
+          <div key={o._id} className="border rounded p-3 bg-white">
             <div className="flex items-center justify-between">
               <div>
-                <div className="font-medium">Order {o.id}</div>
+                <div className="font-medium">Order {o._id}</div>
                 <div className="text-sm text-gray-500">Customer: {o.customer} • Total: ₹{o.total}</div>
               </div>
             </div>
