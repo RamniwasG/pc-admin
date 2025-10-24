@@ -16,8 +16,8 @@ import {
   ResponsiveContainer,
 } from "recharts";
 import { useRouter } from "next/navigation";
-import UserProfileDropdown from "@/components/user-profile";
 import { getUserToken } from "@/utils";
+import UserProfileDropdown from "@/components/user-profile";
 
 const Dashboard = () => {
   // --- Dashboard data (replace with real API data later)
