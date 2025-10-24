@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect} from "react";
+import React, { useEffect, useState} from "react";
 import {
   Package,
   Tags,
@@ -18,21 +18,64 @@ import {
 import { useRouter } from "next/navigation";
 import { getUserToken } from "@/utils";
 import UserProfileDropdown from "@/components/user-profile";
+import api from "@/api/axios-instance";
 
 const Dashboard = () => {
+  // local state for lists
+  const [categories, setCategories] = useState([]);
+  const [subcategories, setSubcategories] = useState([]);
+  const [products, setProducts] = useState([]);
+  const [orders, setOrders] = useState([]);
+  // loading & editing states
+  const [loading, setLoading] = useState(false);
+
+  // fetch lists
+  async function fetchAll() {
+    setLoading(true);
+    try {
+      // const { data } = await api.get("/categories/getAll");
+      const [cats, subs, prods] = await Promise.all([
+        api.get("/categories/getAll").then((r) => r.data),
+        api.get("/subcategories/getAll").then((r) => r.data),
+        api.get("/products/getAll").then((r) => r.data),
+        // api.get("/orders/getAll").then((r) => r.data),
+      ]);
+      setCategories(cats);
+      setSubcategories(subs);
+      setProducts(prods);
+      // setOrders(ords);
+    } catch (e) {
+      console.error(e);
+      alert("Failed to load data");
+    }
+    setLoading(false);
+  }
+
+  const router = useRouter();
+
+  // Auto login if token already exist
+  useEffect(() => {
+    const token = getUserToken();
+    if(token) {
+      router.push("/dashboard")
+    }
+    
+    fetchAll();
+  }, [])
+
   // --- Dashboard data (replace with real API data later)
   const totals = [
-    { label: "Products", value: 150, icon: Package, color: "bg-blue-500" },
-    { label: "Categories", value: 10, icon: Tags, color: "bg-green-500" },
-    { label: "Subcategories", value: 25, icon: Layers, color: "bg-yellow-500" },
-    { label: "Orders", value: 420, icon: ShoppingCart, color: "bg-red-500" },
+    { label: "Products", value: products.length, icon: Package, color: "bg-blue-500" },
+    { label: "Categories", value: categories.length, icon: Tags, color: "bg-green-500" },
+    { label: "Subcategories", value: subcategories.length, icon: Layers, color: "bg-yellow-500" },
+    { label: "Orders", value: orders.length, icon: ShoppingCart, color: "bg-red-500" },
   ];
 
   const pieData = [
-    { name: "Products", value: 150, color: "#3b82f6" },
-    { name: "Categories", value: 10, color: "#22c55e" },
-    { name: "Subcategories", value: 25, color: "#eab308" },
-    { name: "Orders", value: 420, color: "#ef4444" },
+    { name: "Products", value: products.length, color: "#3b82f6" },
+    { name: "Categories", value: categories.length, color: "#22c55e" },
+    { name: "Subcategories", value: subcategories.length, color: "#eab308" },
+    { name: "Orders", value: orders.length, color: "#ef4444" },
   ];
 
   const recentOrders = [
@@ -65,17 +108,6 @@ const Dashboard = () => {
       date: "2025-10-22",
     },
   ];
-
-  const router = useRouter();
-
-// Auto login if token already exist
-  useEffect(() => {
-    const token = getUserToken();
-    if(token) {
-      router.push("/dashboard")
-    }
-  }, [])
-
 
   return (
     <div className="min-h-screen bg-gray-50 p-6">
