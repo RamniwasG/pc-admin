@@ -93,15 +93,17 @@ function ResourceManager({ loading, resource, items, extra = {}, onAdd, onUpdate
               </>
             ) : isSub ? (
               <>
-                <input value={form.name || ""} onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))} placeholder="Subcategory name" className="w-full input px-3 py-2 border rounded" />
-                <select value={form.category || form.category?._id || ""} onChange={(e) => setForm((f) => ({ ...f, category: e.target.value }))} className="w-full input px-3 py-2 border rounded">
+                <input value={form.name || ""} onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))} placeholder="Subcategory title" className="w-full input px-3 py-2 border rounded" />
+                <input value={form.description || ""} onChange={(e) => setForm((f) => ({ ...f, description: e.target.value }))} placeholder="Description" className="w-full input px-3 py-2 border rounded" />
+                <select value={typeof form.category === 'string' ? form.category : form.category?._id} onChange={(e) => setForm((f) => ({ ...f, category: e.target.value }))} className="w-full input px-3 py-2 border rounded">
                   <option value="">Choose category</option>
                   {extra.categories?.map((c) => <option key={c._id} value={c._id}>{c.name}</option>)}
                 </select>
               </>
             ) : (
               <>
-                <input value={form.name || ""} onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))} placeholder="Category name" className="w-full input px-3 py-2 border rounded" />
+                <input value={form.name || ""} onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))} placeholder="Category title" className="w-full input px-3 py-2 border rounded" />
+                <input value={form.description || ""} onChange={(e) => setForm((f) => ({ ...f, description: e.target.value }))} placeholder="Description" className="w-full input px-3 py-2 border rounded" />
               </>
             )}
 
