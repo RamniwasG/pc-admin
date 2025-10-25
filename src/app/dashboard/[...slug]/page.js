@@ -41,6 +41,7 @@ import api from "@/api/axios-instance";
 import SidebarButton from "@/components/sidebar-btn";
 import ResourceManager from "@/components/resource-mgr";
 import OrdersPanel from "@/components/order-panel";
+import GoBack from "@/components/go-back";
 
 
 // --- Main Admin Dashboard ---
@@ -195,6 +196,7 @@ export default function AdminDashboard({ }) {
       <div className="max-w-7xl mx-auto p-4 md:p-4 grid grid-cols-12 gap-6">
         {/* Left sidebar */}
         <aside className="col-span-12 sm:col-span-4 md:col-span-3 bg-white rounded-lg shadow p-3">
+          <GoBack href="/dashboard" label="Dashboard" />
           <div className="mb-4 flex items-center gap-2">
             <Grid className="h-6 w-6" />
             <h2 className="text-2xl font-semibold">Admin</h2>
