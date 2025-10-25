@@ -197,10 +197,10 @@ export default function AdminDashboard({ }) {
         {/* Left sidebar */}
         <aside className="col-span-12 sm:col-span-4 md:col-span-3 bg-white rounded-lg shadow p-3">
           <GoBack href="/dashboard" label="Dashboard" />
-          <div className="mb-4 flex items-center gap-2">
+          {/* <div className="mb-4 flex items-center gap-2">
             <Grid className="h-6 w-6" />
             <h2 className="text-2xl font-semibold">Admin</h2>
-          </div>
+          </div> */}
 
           <nav className="space-y-2">
             <SidebarButton active={active === "categories"} onClick={() => setActive("categories")} icon={Folder} label="Categories" />

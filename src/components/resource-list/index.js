@@ -3,7 +3,7 @@ import {
   Trash2,
 } from "lucide-react";
 
-function ResourceList({ loading, title, items, onEdit, onDelete, renderSub }) {
+function ResourceList({ loading, title, items, editing, onEdit, onDelete, renderSub }) {
   return (
     <div className="space-y-2">
       <div className="flex items-center justify-between">
@@ -15,17 +15,20 @@ function ResourceList({ loading, title, items, onEdit, onDelete, renderSub }) {
         {items.length > 0 && items.map((it) => {
           const value = renderSub(it);
           return (
-            <div key={it._id} className="flex items-center justify-between border rounded p-2 bg-white">
+            <div key={it._id}
+              onClick={() => onEdit(it)}
+              className={`flex items-center justify-between border rounded p-2 ${editing?._id === it._id ? 'bg-lightblue' : 'bg-white'} hover:bg-gray-50 cursor-pointer`}
+            >
               <div>
                 <div className="font-medium">{it.name || it.title || it._id}</div>
                 {renderSub && value && <div className="text-xs font-bold text-white bg-green-500 rounded p-1">{renderSub(it)}</div>}
               </div>
               <div className="flex items-center gap-2">
                 <button onClick={() => onEdit(it)} className="p-1 hover:bg-gray-100 rounded">
-                  <Edit2 className="h-4 w-4" />
+                  <Edit2 className="sm:h-4 lg:h-5 sm:w-4 lg:w-5" />
                 </button>
                 <button onClick={() => onDelete(it)} className="p-1 hover:bg-gray-100 rounded">
-                  <Trash2 className="h-4 w-4 text-red-500" />
+                  <Trash2 className="sm:h-4 lg:h-5 sm:w-4 lg:w-5 text-red-500" />
                 </button>
               </div>
             </div>

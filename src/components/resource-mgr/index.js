@@ -46,6 +46,7 @@ function ResourceManager({ loading, resource, items, extra = {}, onAdd, onUpdate
           // title={`${resource} list`}
           loading={loading}
           items={items}
+          editing={editing}
           onEdit={startEdit}
           onDelete={(it) => onDelete(it._id)}
           renderSub={(it) => {
@@ -65,9 +66,9 @@ function ResourceManager({ loading, resource, items, extra = {}, onAdd, onUpdate
       </div>
 
       <div className="md:col-span-1 mt-2">
-        <div className="border rounded p-4 bg-gray-50">
+        <div className="shadow-md rounded p-4 bg-gray-100">
           <div className="flex items-center justify-between mb-2">
-            <h4 className="font-semibold">{editing ? "Edit" : "Add New"} {resource.replace(/s$/, "")}</h4>
+            <h4 className="font-semibold">{editing ? "Edit" : "Add New"} {resource.replace(/ies$/, "y")}</h4>
             {editing && (
               <button onClick={() => { setEditing(null); }} className="p-1 hover:bg-gray-100 rounded">
                 <X className="h-4 w-4" />
@@ -107,14 +108,14 @@ function ResourceManager({ loading, resource, items, extra = {}, onAdd, onUpdate
               </>
             )}
 
-            <div className="flex gap-2">
-              <button type="submit" className="btn inline-flex items-center gap-2">
-                <Save className="h-4 w-4" />
-                <span>{editing ? "Update" : "Add"}</span>
-              </button>
-              <button type="button" onClick={() => { setForm(emptyForm); setEditing(null); }} className="btn-ghost inline-flex items-center gap-2">
+            <div className="flex justify-end gap-3 mt-3">
+              <button type="button" onClick={() => { setForm(emptyForm); setEditing(null); }} className="bg-red-500 text-white rounded p-1 inline-flex items-center gap-2">
                 <X className="h-4 w-4" />
                 <span>Clear</span>
+              </button>
+              <button type="submit" className="btn bg-green-500 text-white rounded p-1 inline-flex items-center gap-2">
+                <Save className="h-4 w-4" />
+                <span>{editing ? "Update" : "Save"}</span>
               </button>
             </div>
           </form>
