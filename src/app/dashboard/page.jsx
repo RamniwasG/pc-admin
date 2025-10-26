@@ -125,7 +125,7 @@ const Dashboard = () => {
           <div
             key={index}
             className="bg-white shadow-sm border border-gray-100 rounded-xl p-5 flex items-center justify-between hover:shadow-lg cursor-pointer transition"
-            onClick={() => router.push(`/dashboard/manage`)}
+            onClick={() => router.push(`/dashboard/${item.label.toLowerCase()}`)}
           >
             <div>
               <p className="text-xl">{item.label}</p>
