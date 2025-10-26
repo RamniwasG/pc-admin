@@ -119,7 +119,17 @@ export default function AdminDashboardComp({ section }) {
 
   // --- Products actions ---
   async function addProduct(payload) {
-    const res = await api.post("/products/add", payload);
+    const formData = new FormData();
+    const { title, description, price, category, subcategory, size, weight, image } = payload;
+    formData.append("title", title);
+    formData.append("description", description);
+    formData.append("price", price);
+    formData.append("category", category);
+    formData.append("subcategory", subcategory);
+    formData.append("size", size);
+    formData.append("weight", weight);
+    formData.append("image", image);
+    const res = await api.post("/products/add", formData);
     setProducts((s) => [...s, res.data]);
   }
   async function updateProduct(id, payload) {

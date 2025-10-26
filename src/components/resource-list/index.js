@@ -5,7 +5,7 @@ import {
 
 function ResourceList({ loading, title, items, editing, onEdit, onDelete, renderSub }) {
   return (
-    <div className="space-y-2">
+    <div className="space-y-2 categories-list">
       <div className="flex items-center justify-between">
         <h4 className="font-semibold">{title}</h4>
       </div>

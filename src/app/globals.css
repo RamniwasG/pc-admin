@@ -28,3 +28,13 @@ body {
 .bg-lightblue {
   background-color: lightblue;
 }
+
+.third-col {
+  height: calc(100% - 8rem);
+  overflow-y: auto;
+}
+
+.categories-list {
+  height: calc(100% - 16rem);
+  overflow-y: auto;
+}
