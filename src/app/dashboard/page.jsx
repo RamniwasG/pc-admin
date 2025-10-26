@@ -6,6 +6,7 @@ import {
   Layers,
   ShoppingCart,
   MoreVertical,
+  User,
 } from "lucide-react";
 import {
   PieChart,
@@ -22,9 +23,10 @@ import api from "@/api/axios-instance";
 
 const Dashboard = () => {
   // local state for lists
+  const [users, setUsers] = useState([]);
+  const [products, setProducts] = useState([]);
   const [categories, setCategories] = useState([]);
   const [subcategories, setSubcategories] = useState([]);
-  const [products, setProducts] = useState([]);
   const [orders, setOrders] = useState([]);
   // loading & editing states
   const [loading, setLoading] = useState(false);
@@ -65,17 +67,19 @@ const Dashboard = () => {
 
   // --- Dashboard data (replace with real API data later)
   const totals = [
-    { label: "Products", value: products.length, icon: Package, color: "bg-blue-500" },
+    { label: "Users", value: products.length || 5, icon: User, color: "bg-blue-500" },
+    { label: "Products", value: products.length || 10, icon: Package, color: "bg-blue-500" },
     { label: "Categories", value: categories.length, icon: Tags, color: "bg-green-500" },
     { label: "Subcategories", value: subcategories.length, icon: Layers, color: "bg-yellow-500" },
-    { label: "Orders", value: orders.length, icon: ShoppingCart, color: "bg-red-500" },
+    { label: "Orders", value: orders.length || 3, icon: ShoppingCart, color: "bg-red-500" },
   ];
 
   const pieData = [
-    { name: "Products", value: products.length, color: "#3b82f6" },
+    { name: "Users", value: users.length || 5, color: "bg-blue-500" },
+    { name: "Products", value: products.length || 10, color: "#3b82f6" },
     { name: "Categories", value: categories.length, color: "#22c55e" },
     { name: "Subcategories", value: subcategories.length, color: "#eab308" },
-    { name: "Orders", value: orders.length, color: "#ef4444" },
+    { name: "Orders", value: orders.length || 3, color: "#ef4444" },
   ];
 
   const recentOrders = [
@@ -120,7 +124,7 @@ const Dashboard = () => {
       </div>
 
       {/* Summary Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-6 mb-10">
         {totals.map((item, index) => (
           <div
             key={index}

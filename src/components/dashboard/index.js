@@ -202,6 +202,7 @@ export default function AdminDashboardComp({ section }) {
           </div> */}
 
           <nav className="space-y-2">
+            <SidebarButton active={active === "users"} onClick={() => setActive("users")} icon={Layers} label="Users" />
             <SidebarButton active={active === "products"} onClick={() => setActive("products")} icon={Layers} label="Products" />
             <SidebarButton active={active === "categories"} onClick={() => setActive("categories")} icon={Folder} label="Categories" />
             <SidebarButton active={active === "subcategories"} onClick={() => setActive("subcategories")} icon={Tag} label="Subcategories" />
