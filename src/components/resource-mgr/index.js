@@ -12,7 +12,13 @@ function ResourceManager({ loading, resource, items, extra = {}, onAdd, onUpdate
   const isSub = resource === "subcategories";
 
   const emptyForm = useMemo(() => {
-    if (isProduct) return { title: "", description: "", price: 0, categoryId: "", subcategoryId: "", stock: 0, size: "", weight: "", image: null };
+    if (isProduct) return { 
+        title: "", description: "", price: 0, discount: 0, // basic info
+        categoryId: "", subcategoryId: "", // relational fields
+        stock: 0, brand: "", // inventory details
+        size: "", color: "", WUnit: "", weight: "", // various product specs
+        rating: 0, image: null // additional attributes
+    };
     if (isSub) return { name: "", category: "" };
     return { name: "" };
   }, [isProduct, isSub]);
@@ -38,12 +44,12 @@ function ResourceManager({ loading, resource, items, extra = {}, onAdd, onUpdate
   function startEdit(item) {
     setEditing(item);
   }
-
+console.log(extra);
   return (
     <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
       <div className="md:col-span-2">
         <ResourceList
-          // title={`${resource} list`}
+          title={`${resource} list`}
           loading={loading}
           items={items}
           editing={editing}
@@ -117,6 +123,19 @@ function ResourceManager({ loading, resource, items, extra = {}, onAdd, onUpdate
                     />
                 </div>
 
+                {/* Discount */}
+                <div>
+                    <label className="block font-medium mb-1">Discount (%)</label>
+                    <input
+                        type="number"
+                        value={form.discount}
+                        onChange={(e) => setForm((f) => ({ ...f, discount: e.target.value }))}
+                        required
+                        className="w-full border p-1 rounded"
+                        placeholder="Discount"
+                    />
+                </div>
+
                 {/* Category */}
                 <div>
                     <label className="block font-medium mb-1">Subcategory</label>
@@ -131,7 +150,7 @@ function ResourceManager({ loading, resource, items, extra = {}, onAdd, onUpdate
                     <label className="block font-medium mb-1">Subcategory</label>
                     <select value={form.subcategoryId || ""} onChange={(e) => setForm((f) => ({ ...f, subcategoryId: e.target.value }))} className="w-full input px-3 py-1 border rounded" disabled={!form.categoryId}>
                         <option value="">Choose subcategory</option>
-                        {extra.subcategories?.filter((s) => s.categoryId === form.categoryId).map((s) => <option key={s._id} value={s._id}>{s.name}</option>)}
+                        {extra.subcategories?.filter((s) => s.category._id === form.categoryId).map((s) => <option key={s._id} value={s._id}>{s.name}</option>)}
                     </select>
                 </div>
 
@@ -145,6 +164,19 @@ function ResourceManager({ loading, resource, items, extra = {}, onAdd, onUpdate
                         required
                         className="w-full border p-1 rounded"
                         placeholder="Stock"
+                    />
+                </div>
+
+                {/* Brand */}
+                <div>
+                    <label className="block font-medium mb-1">Brand</label>
+                    <input
+                        type="text"
+                        value={form.brand}
+                        onChange={(e) => setForm((f) => ({ ...f, brand: e.target.value }))}
+                        required
+                        className="w-full border p-1 rounded"
+                        placeholder="Brand"
                     />
                 </div>
 
@@ -166,33 +198,78 @@ function ResourceManager({ loading, resource, items, extra = {}, onAdd, onUpdate
                     </select>
                 </div>
 
+                {/* Color */}
+                <div>
+                    <label className="block font-medium mb-1">Color</label>
+                    <select
+                        value={form.color}
+                        onChange={(e) => setForm((f) => ({ ...f, color: e.target.value }))}
+                        required
+                        className="w-full border p-1 rounded"
+                    >
+                        <option value="">Select Color</option>
+                        {["Black", "Red", "White", "Yellow", "Orange", "Blue"].map(
+                            (s) => (
+                                <option key={s} value={s}>{s}</option>
+                            )
+                        )}
+                    </select>
+                </div>
+
                 {/* Weight */}
                 <div>
                     <label className="block font-medium mb-1">Weight</label>
                     <select
-                        value={form.weight}
-                        onChange={(e) => setForm((f) => ({ ...f, weight: e.target.value }))}
+                        value={form.WUnit}
+                        onChange={(e) => setForm((f) => ({ ...f, WUnit: e.target.value }))}
                         required
                         className="w-full border p-1 rounded"
                     >
-                        <option value="">Select Weight</option>
-                            {["kg", "tun", "100kg"].map((w) => (
+                        <option value="">Select Weight Unit</option>
+                            {["g", "kg", "pound"].map((w) => (
                             <option key={w} value={w}>
                                 {w}
                             </option>
                         ))}
                     </select>
                 </div>
+                {form.WUnit && (
+                    <div>
+                        <label className="block font-medium mb-1">Weight Value</label>
+                        <input
+                            type="number"
+                            value={form.weight}
+                            onChange={(e) => setForm((f) => ({ ...f, weight: e.target.value }))}
+                            required
+                            className="w-full border p-1 rounded"
+                            placeholder="Weight"
+                        />
+                    </div>
+                )}
 
                 {/* Image Upload */}
                 <div>
                     <label className="block font-medium mb-1">Product Image</label>
                     <input
                         type="file"
-                        onChange={(e) => setForm((f) => ({ ...f, image: e.target.files[0] }))}
+                        multiple
+                        onChange={(e) => setForm((f) => ({ ...f, image: e.target.files }))}
                         accept="image/*"
                         required
                         className="w-full"
+                    />
+                </div>
+
+                {/* Rating */}
+                <div>
+                    <label className="block font-medium mb-1">Rating</label>
+                    <input
+                        type="text"
+                        value={form.rating}
+                        onChange={(e) => setForm((f) => ({ ...f, rating: e.target.value }))}
+                        required
+                        className="w-full border p-1 rounded"
+                        placeholder="Rating"
                     />
                 </div>
               </div>

@@ -120,15 +120,21 @@ export default function AdminDashboardComp({ section }) {
   // --- Products actions ---
   async function addProduct(payload) {
     const formData = new FormData();
-    const { title, description, price, category, subcategory, size, weight, image } = payload;
+    const { title, description, price, stock, categoryId, subcategoryId,
+        brand, size, color, WUnit, weight, image, rating 
+    } = payload;
     formData.append("title", title);
     formData.append("description", description);
     formData.append("price", price);
-    formData.append("category", category);
-    formData.append("subcategory", subcategory);
+    formData.append("stock", stock);
+    formData.append("category", categoryId);
+    formData.append("subcategory", subcategoryId);
+    formData.append("brand", brand);
     formData.append("size", size);
-    formData.append("weight", weight);
+    formData.append("color", color);
+    formData.append("weight", weight + " " + WUnit);
     formData.append("image", image);
+    formData.append("rating", rating);
     const res = await api.post("/products/add", formData);
     setProducts((s) => [...s, res.data]);
   }
@@ -226,7 +232,7 @@ export default function AdminDashboardComp({ section }) {
         <main className="col-span-12 sm:col-span-8 md:col-span-9">
           <div className="bg-white rounded-lg shadow p-4">
             <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-semibold capitalize">{active}</h3>
+              {/* <h3 className="text-lg font-semibold capitalize">{active}</h3> */}
               <div>{loading ? <span className="text-sm text-gray-500">Loading...</span> : null}</div>
             </div>
 
