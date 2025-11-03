@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from "react";
 import { User, Settings, Lock, LogOut } from "lucide-react";
 import api from "@/api/axios-instance";
-import { clearLoginCredentials } from "@/utils";
+import { clearLoginCredentials, getUserData } from "@/utils";
 import Link from "next/link";
 
 export default function UserProfileDropdown() {
@@ -11,8 +11,9 @@ export default function UserProfileDropdown() {
 
   useEffect(() => {
     async function fetchUserProfile() {
-        const { data } = await api.get('/admin-auth/profile');
-        setUserProfile(data);
+      const userData = getUserData();
+      const { data } = await api.get('/auth/get-profile/' + userData.id);
+      setUserProfile(data);
     }
     fetchUserProfile();
   }, [])
