@@ -1,3 +1,5 @@
+import { Lock, Settings, User } from "lucide-react";
+
 export const roles = [
   { value: "admin", label: "Admin" },
   { value: "staff", label: "Staff" },
@@ -17,4 +19,10 @@ export const paymentMethods = [
   { value: "paypal", label: "PayPal" },
   { value: "bank_transfer", label: "Bank Transfer" },
   { value: "cash_on_delivery", label: "Cash on Delivery" },
+];
+
+export const userPrifileMenuItems = [
+  { label: "Profile", href: "/profile", icon: User },
+  { label: "Settings", href: "/settings", icon: Settings },
+  { label: "Change Password", href: "/change-password", icon: Lock },
 ];

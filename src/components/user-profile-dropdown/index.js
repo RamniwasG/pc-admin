@@ -3,11 +3,14 @@ import { User, Settings, Lock, LogOut } from "lucide-react";
 import api from "@/api/axios-instance";
 import { clearLoginCredentials, getUserData } from "@/utils";
 import Link from "next/link";
+import { userPrifileMenuItems } from "@/constants";
+import { useRouter } from "next/navigation";
 
 export default function UserProfileDropdown() {
   const [open, setOpen] = useState(false);
   const [userProfile, setUserProfile] = useState(null);
   const dropdownRef = useRef(null);
+  const router = useRouter();
 
   useEffect(() => {
     async function fetchUserProfile() {
@@ -46,21 +49,15 @@ export default function UserProfileDropdown() {
       {open && (
         <div className="absolute right-0 mt-2 w-48 bg-white shadow-lg rounded-xl border border-gray-100 z-50">
           <ul className="flex flex-col py-2 text-sm text-gray-700">
-            <li>
-              <button className="flex items-center w-full px-4 py-2 cursor-pointer hover:bg-gray-100 transition">
-                <Link href="/profile" className="flex items-center"><User className="w-4 h-4 mr-2 text-gray-500" /> Profile</Link>
-              </button>
-            </li>
-            <li>
-              <button className="flex items-center w-full px-4 py-2 cursor-pointer hover:bg-gray-100 transition">
-                <Link href="/settings" className="flex items-center"><Settings className="w-4 h-4 mr-2 text-gray-500" /> Settings</Link>
-              </button>
-            </li>
-            <li>
-              <button className="flex items-center w-full px-4 py-2 cursor-pointer hover:bg-gray-100 transition">
-                <Link href="/change-password" className="flex items-center"><Lock className="w-4 h-4 mr-2 text-gray-500" /> Change Password</Link>
-              </button>
-            </li>
+            {userPrifileMenuItems.map((item) => (
+              <li key={item.label} onClick={() => router.push(item.href)}>
+                <button className="flex items-center w-full px-4 py-2 cursor-pointer hover:bg-gray-100 transition">
+                  <Link href={item.href} className="flex items-center">
+                    <item.icon className="w-4 h-4 mr-2 text-gray-500" /> {item.label}
+                  </Link>
+                </button>
+              </li>
+            ))}
             <li>
               <div className="border-t my-1"></div>
             </li>
@@ -68,7 +65,7 @@ export default function UserProfileDropdown() {
               <button className="flex items-center w-full px-4 py-2 text-red-600 cursor-pointer hover:bg-red-50 transition" onClick={() => {
                 clearLoginCredentials();
               }}>
-                <Link href="/login" className="flex items-center"><LogOut className="w-4 h-4 mr-2" /> Logout</Link>
+                <Link href="/admin/login" className="flex items-center"><LogOut className="w-4 h-4 mr-2" /> Logout</Link>
               </button>
             </li>
           </ul>

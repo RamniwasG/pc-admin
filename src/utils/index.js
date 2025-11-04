@@ -7,8 +7,8 @@ export const setUserToken = (token) => {
 }
 
 export const getUserData = () => {
-    const data = localStorage.getItem('userData') || {}
-    return JSON.parse(data)
+    const data = localStorage.getItem('userData')
+    return data ? JSON.parse(data) : {};
 }
 
 export const setUserData = (user) => {
