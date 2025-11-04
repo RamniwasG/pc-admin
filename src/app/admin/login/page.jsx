@@ -67,7 +67,7 @@ const AdminLogin = () => {
       const { data } = await api.post("/auth/verify-otp", { 
         phone: email,
         otp: passcode,
-        mobile: phone,
+        mobile: `+91${phone}`,
         role
       });
       const { token, user } = data;
@@ -91,13 +91,13 @@ const AdminLogin = () => {
   };
 
   return (
-    <div className="flex flex-col min-h-screen items-center justify-center sm:justify-start bg-gray-100">
+    <div className={`flex flex-col min-h-screen items-center ${sentPasscode ? 'justify-start' : 'justify-center'} sm:justify-start bg-gray-100`}>
       <div>
         <Image
           src='/logo.png'
           width={100}
           height={100}
-          className="w-[140px] sm:w-[200px] h-[140px] sm:h-[200px] rounded-full"
+          className="w-[120px] sm:w-[160px] h-[120px] sm:h-[160px] rounded-full"
           alt="app logo"
           priority={true}
         />
@@ -111,7 +111,7 @@ const AdminLogin = () => {
           {sentPasscode && <div className="flex flex-col items-center mb-6">
             <p className="text-sm text-green-500">{successMsg}</p>
           </div>}
-          <form onSubmit={sentPasscode ? handleVerifyPasscode : handleSendPasscode} className="space-y-5">
+          <form onSubmit={sentPasscode ? handleVerifyPasscode : handleSendPasscode} className={`space-y-${sentPasscode ? '2' : '5'}`}>
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
                 Email <span className="text-md text-red-500">*</span>
@@ -169,7 +169,7 @@ const AdminLogin = () => {
                   name="role"
                   value={formData.role}
                   onChange={handleChange}
-                  className={`w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-indigo-500 outline-none ${sentPasscode ? 'bg-gray-200' : ''}`}
+                  className={`w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-indigo-500 outline-none`}
                 >
                   <option value="">Select Role</option>
                   {roles.map((role) => (
@@ -189,11 +189,11 @@ const AdminLogin = () => {
               className={`w-full flex items-center justify-center gap-2 ${sentPasscode ? 'bg-pink-500' : 'bg-amber-600'} hover:bg-orange-500 hover:border-0 text-white font-medium py-2 rounded-lg transition`}
             >
               {loading ? (
-                <span className="animate-pulse">Sending...</span>
+                <span className="animate-pulse">{sentPasscode ? 'Verifying' : 'Sending'}...</span>
               ) : (
                 <>
-                  {sentPasscode ? <ArrowRight size={18} /> : ''}
                   {sentPasscode ? 'Verify Passcode' : 'Login'}
+                  {sentPasscode ? <ArrowRight size={18} /> : ''}
                 </>
               )}
             </button>

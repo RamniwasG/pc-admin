@@ -132,7 +132,7 @@ const Dashboard = () => {
             onClick={() => router.push(`/dashboard/${item.label.toLowerCase()}`)}
           >
             <div>
-              <p className="text-xl">{item.label}</p>
+              <p className="sm:text-sm md:text-md lg:text-lg">{item.label}</p>
               <h2 className="text-2xl font-bold text-gray-600">
                 {item.value}
               </h2>
