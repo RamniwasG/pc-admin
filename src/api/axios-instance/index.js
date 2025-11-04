@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 export const useAxios = () => {
   const router = useRouter();
   const api = axios.create({
-    baseURL: "http://localhost:5002/api",
+    baseURL: process.env.NEXT_PUBLIC_API_URL || "http://localhost:5002/api",
     timeout: 10000,
     headers: { 
       "Content-Type": "application/json",
