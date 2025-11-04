@@ -31,11 +31,11 @@ export default function ProductFormDrawer({ editing, setEditing, resource, onAdd
       </button>
 
       {/* 🔲 Overlay (dim background) */}
-      {open && (
+      {(open || editing) && (
         <div
-          onClick={() => setOpen(null)}
+          onClick={() => { setOpen(null); setEditing(null); }}
           className={`fixed inset-0 bg-transparent z-40 transition-opacity duration-400 ${
-            open ? "bg-opacity-40" : "bg-opacity-0"
+            (open || editing) ? "bg-opacity-40" : "bg-opacity-0"
           }`}
         ></div>
       )}
@@ -43,7 +43,7 @@ export default function ProductFormDrawer({ editing, setEditing, resource, onAdd
       {/* 🧾 Slide-over panel */}
       <div
         className={`fixed top-0 right-0 h-full w-full sm:w-[450px] bg-white shadow-xl z-50 transform transition-transform duration-300 ${
-          open ? "translate-x-0" : "translate-x-full"
+          (open || editing) ? "translate-x-0" : "translate-x-full"
         }`}
       >
         {/* Header */}
@@ -52,7 +52,7 @@ export default function ProductFormDrawer({ editing, setEditing, resource, onAdd
             {getAddResourceText(resource, editing)}
           </h2>
           <button
-            onClick={() => setOpen(false)}
+            onClick={() => {setOpen(false); setEditing(null);}}
             className="text-gray-500 hover:text-gray-700"
           >
             <X size={20} />

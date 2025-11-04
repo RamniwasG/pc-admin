@@ -63,9 +63,9 @@ export default function AdminDashboardComp({ section }) {
     try {
       // const { data } = await api.get("/categories/getAll");
       const [cats, subs] = await Promise.all([
-        api.get("/categories/getAll").then((r) => r.data),
-        api.get("/subcategories/getAll").then((r) => r.data),
-        // api.get("/products/getAll").then((r) => r.data),
+        api.get("/categories/fetchAllCategories").then((r) => r.data),
+        api.get("/subcategories/fetchAllSubCategories").then((r) => r.data),
+        // api.get("/products/fetchAllProducts").then((r) => r.data),
         // api.get("/orders/getAll").then((r) => r.data),
       ]);
       setCategories(cats);
