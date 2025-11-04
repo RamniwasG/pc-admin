@@ -103,7 +103,7 @@ function AddProductForm({ editing, setEditing, resource, onAdd, onUpdate, extra 
             <div>
                 <label className="block text-sm font-medium text-gray-700">Subcategory</label>
                 <select value={form.categoryId || ""} onChange={(e) => setForm((f) => ({ ...f, categoryId: e.target.value, subcategoryId: "" }))} className="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-blue-500 focus:border-blue-500">
-                <option value="">Choose category</option>
+                <option value="">Select category</option>
                 {extra.categories?.map((c) => <option key={c._id} value={c._id}>{c.name}</option>)}
                 </select>
             </div>
@@ -112,7 +112,7 @@ function AddProductForm({ editing, setEditing, resource, onAdd, onUpdate, extra 
             <div>
                 <label className="block text-sm font-medium text-gray-700">Subcategory</label>
                 <select value={form.subcategoryId || ""} onChange={(e) => setForm((f) => ({ ...f, subcategoryId: e.target.value }))} className="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-blue-500 focus:border-blue-500" disabled={!form.categoryId}>
-                    <option value="">Choose subcategory</option>
+                    <option value="">Select subcategory</option>
                     {extra.subcategories?.filter((s) => s.category._id === form.categoryId).map((s) => <option key={s._id} value={s._id}>{s.name}</option>)}
                 </select>
             </div>
@@ -241,7 +241,7 @@ function AddProductForm({ editing, setEditing, resource, onAdd, onUpdate, extra 
                 <input value={form.name || ""} onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))} placeholder="Subcategory title" className="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-blue-500 focus:border-blue-500" />
                 <input value={form.description || ""} onChange={(e) => setForm((f) => ({ ...f, description: e.target.value }))} placeholder="Description" className="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-blue-500 focus:border-blue-500" />
                 <select value={typeof form.category === 'string' ? form.category : form.category?._id} onChange={(e) => setForm((f) => ({ ...f, category: e.target.value }))} className="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-blue-500 focus:border-blue-500">
-                    <option value="">Choose category</option>
+                    <option value="">Select category</option>
                     {extra.categories?.map((c) => <option key={c._id} value={c._id}>{c.name}</option>)}
                 </select>
             </>
