@@ -37,7 +37,7 @@ import {
   Save,
   X,
 } from "lucide-react";
-import api from "@/api/axios-instance";
+import { useAxios } from "@/api/axios-instance";
 import SidebarButton from "@/components/sidebar-btn";
 import ResourceManager from "@/components/resource-mgr";
 import OrdersPanel from "@/components/order-panel";
@@ -46,7 +46,7 @@ import GoBack from "@/components/go-back";
 // --- Main Admin Dashboard ---
 export default function AdminDashboardComp({ section }) {
   const [active, setActive] = useState(section); // categories | subcategories | products | orders
-
+  const api = useAxios();
   // local state for lists
   const [categories, setCategories] = useState([]);
   const [subcategories, setSubcategories] = useState([]);

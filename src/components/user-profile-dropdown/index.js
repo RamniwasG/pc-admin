@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from "react";
 import { User, Settings, Lock, LogOut } from "lucide-react";
-import api from "@/api/axios-instance";
+import { useAxios } from "@/api/axios-instance";
 import { clearLoginCredentials, getUserData } from "@/utils";
 import Link from "next/link";
 import { userPrifileMenuItems } from "@/constants";
@@ -11,6 +11,7 @@ export default function UserProfileDropdown() {
   const [userProfile, setUserProfile] = useState(null);
   const dropdownRef = useRef(null);
   const router = useRouter();
+  const api = useAxios();
 
   useEffect(() => {
     async function fetchUserProfile() {

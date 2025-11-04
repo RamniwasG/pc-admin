@@ -19,9 +19,10 @@ import {
 import { useRouter } from "next/navigation";
 import { getUserToken } from "@/utils";
 import UserProfileDropdown from "@/components/user-profile-dropdown";
-import api from "@/api/axios-instance";
+import { useAxios } from "@/api/axios-instance";
 
 const Dashboard = () => {
+  const api = useAxios();
   // local state for lists
   const [users, setUsers] = useState([]);
   const [products, setProducts] = useState([]);
@@ -37,9 +38,9 @@ const Dashboard = () => {
     try {
       // const { data } = await api.get("/categories/getAll");
       const [cats, subs, prods] = await Promise.all([
-        api.get("/categories/getAll").then((r) => r.data),
-        api.get("/subcategories/getAll").then((r) => r.data),
-        api.get("/products/getAll").then((r) => r.data),
+        api.get("/categories/fetchAllCategories").then((r) => r.data),
+        api.get("/subcategories/fetchAllSubCategories").then((r) => r.data),
+        api.get("/products/fetchAllProducts").then((r) => r.data),
         // api.get("/orders/getAll").then((r) => r.data),
       ]);
       setCategories(cats);

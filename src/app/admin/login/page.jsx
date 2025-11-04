@@ -4,11 +4,12 @@ import { ArrowRight, LogIn, LogInIcon, ShieldCheck } from "lucide-react";
 import { useRouter } from "next/navigation"; // or useNavigate() if using React Router
 import Image from "next/image";
 import { getUserToken, setUserData, setUserToken } from "@/utils";
-import api from "@/api/axios-instance";
+import { useAxios } from "@/api/axios-instance";
 import { roles } from "@/constants";
 
 const AdminLogin = () => {
   const router = useRouter();
+  const api = useAxios();
 
   const [formData, setFormData] = useState({
     email: "",
@@ -19,6 +20,7 @@ const AdminLogin = () => {
 
   const [loading, setLoading] = useState(false);
   const [sentPasscode, setSentPasscode] = useState(false);
+  const [userExist, setUserExist] = useState(false);
   const [successMsg, setSuccessMsg] = useState('');
   const [error, setError] = useState("");
 
@@ -45,6 +47,9 @@ const AdminLogin = () => {
       const { data } = await api.post("/auth/send-otp", { phone: formData.email });
       if(data.success) {
         setSentPasscode(true);
+        if(data.user) {
+          setUserExist(true);
+        }
         setSuccessMsg(data.message || 'Passcode sent successfully');
       }
     } catch (err) {
@@ -59,7 +64,6 @@ const AdminLogin = () => {
   // Handle verify passcode
   const handleVerifyPasscode = async (e) => {
     e.preventDefault();
-    setError("");
     setLoading(true);
 
     try {
@@ -77,6 +81,8 @@ const AdminLogin = () => {
       if (user.role === "admin") {
         router.push("/dashboard");
       } else if (user.role === "seller") {
+        router.push("/dashboard");
+      } else if (user.role === "staff") {
         router.push("/dashboard");
       } else {
         setError("Unauthorized access");
@@ -103,15 +109,21 @@ const AdminLogin = () => {
         />
       </div>
       <div className="w-full max-w-md bg-white shadow-lg rounded-2xl p-8">
-          <div className="flex flex-col items-center mb-6">
+          <div className="flex flex-col items-center mb-3">
             {sentPasscode ? <ShieldCheck className="w-9 h-9 text-indigo-600 mb-2" /> : <LogInIcon className="w-9 h-9 text-indigo-600 mb-2" />}
             <h2 className="text-2xl font-semibold text-gray-800">{sentPasscode ? 'Verify Security Code' : 'Admin Login'}</h2>
-            <p className="text-sm text-gray-500">Access your dashboard</p>
+            {/* <p className="text-sm text-gray-500">Access your dashboard</p> */}
           </div>
-          {sentPasscode && <div className="flex flex-col items-center mb-6">
+          {sentPasscode && userExist && <div className="flex flex-col items-center mb-3">
+            <p className="text-sm text-red bg-yellow-500">User Exists!</p>
+          </div>}
+          {sentPasscode && <div className="flex flex-col items-center mb-3">
             <p className="text-sm text-green-500">{successMsg}</p>
           </div>}
-          <form onSubmit={sentPasscode ? handleVerifyPasscode : handleSendPasscode} className={`space-y-${sentPasscode ? '2' : '5'}`}>
+          {error && (
+            <p className="text-sm text-red-500 text-center mt-2">{error}</p>
+          )}
+          <form onSubmit={sentPasscode ? handleVerifyPasscode : handleSendPasscode} className={`space-y-${sentPasscode ? '3' : '5'}`}>
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
                 Email <span className="text-md text-red-500">*</span>
@@ -145,44 +157,42 @@ const AdminLogin = () => {
                   />
                 </div>
               </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Mobile Number <span className="text-md text-red-500">*</span>
-                </label>
-                <div className="relative">
-                  <input
-                    type={"text"}
-                    name="phone"
-                    value={formData.phone}
-                    onChange={handleChange}
-                    className="w-full border rounded-lg px-3 py-2 pr-10 focus:ring-2 focus:ring-indigo-500 outline-none"
-                    placeholder="+91 868 634 0975"
-                    required
-                  />
+              {!userExist && <>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Mobile Number <span className="text-md text-red-500">*</span>
+                  </label>
+                  <div className="relative">
+                    <input
+                      type={"text"}
+                      name="phone"
+                      value={formData.phone}
+                      onChange={handleChange}
+                      className="w-full border rounded-lg px-3 py-2 pr-10 focus:ring-2 focus:ring-indigo-500 outline-none"
+                      placeholder="+91 868 634 0975"
+                      required
+                    />
+                  </div>
                 </div>
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Role <span className="text-md text-red-500">*</span>
-                </label>
-                <select
-                  name="role"
-                  value={formData.role}
-                  onChange={handleChange}
-                  className={`w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-indigo-500 outline-none`}
-                >
-                  <option value="">Select Role</option>
-                  {roles.map((role) => (
-                    <option key={role.value} value={role.value}>{role.label}</option>
-                  ))}
-                </select>
-              </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Role <span className="text-md text-red-500">*</span>
+                  </label>
+                  <select
+                    name="role"
+                    value={formData.role}
+                    onChange={handleChange}
+                    className={`w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-indigo-500 outline-none`}
+                  >
+                    <option value="">Select Role</option>
+                    {roles.map((role) => (
+                      <option key={role.value} value={role.value}>{role.label}</option>
+                    ))}
+                  </select>
+                </div>
+              </>}
             </>}
-
-            {error && (
-              <p className="text-sm text-red-500 text-center mt-2">{error}</p>
-            )}
-
+            
             <button
               type="submit"
               disabled={loading}
@@ -197,6 +207,23 @@ const AdminLogin = () => {
                 </>
               )}
             </button>
+            {sentPasscode && (
+              <p className="text-sm text-gray-500 text-center">
+                Didn't receive the code?{" "}
+                <button
+                  type="button"
+                  className="text-indigo-600 hover:underline"
+                  onClick={() => {
+                    setSentPasscode(false);
+                    setUserExist(false);
+                    setFormData({ ...formData, passcode: '' });
+                    setError('');
+                  }}
+                >
+                  Resend
+                </button>
+              </p>
+            )}
           </form>
       </div>
     </div>
