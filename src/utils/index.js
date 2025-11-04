@@ -19,3 +19,9 @@ export const clearLoginCredentials = () => {
     localStorage.removeItem('token');
     localStorage.removeItem('userData');
 }
+
+// Capitalize each word (optional enhancement)
+export const capitalizeWords = (str) => str.replace(/\b\w/g, (char) => char.toUpperCase());
+
+//With optional chaining (handles empty strings safely)
+export const capitalize = (str) => str?.[0]?.toUpperCase() + str?.slice(1) || "";

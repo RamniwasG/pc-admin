@@ -2,12 +2,15 @@ import {
   Edit2,
   Trash2,
 } from "lucide-react";
+import ProductFormDrawer from "../product-form-drawer";
+import { capitalizeWords } from "@/utils";
 
 function ResourceList({ loading, title, items, editing, onEdit, onDelete, renderSub }) {
   return (
     <div className={`space-y-2 ${title === 'subcategories list' ? 'categories-list' : ''}`}>
       <div className="flex items-center justify-between">
-        <h4 className="font-semibold">{title}</h4>
+        <p className="text-lg font-semibold">{capitalizeWords(title)}</p>
+        {/* <ProductFormDrawer /> */}
       </div>
       <div className="space-y-2">
         {loading && <div className="text-sm text-gray-500">Loading...</div>}
