@@ -1,10 +1,11 @@
 "use client";
 import React, { useEffect, useState } from "react";
-import { LogIn, LogInIcon, ShieldCheck } from "lucide-react";
+import { ArrowRight, LogIn, LogInIcon, ShieldCheck } from "lucide-react";
 import { useRouter } from "next/navigation"; // or useNavigate() if using React Router
 import Image from "next/image";
 import { getUserToken, setUserData, setUserToken } from "@/utils";
 import api from "@/api/axios-instance";
+import { roles } from "@/constants";
 
 const AdminLogin = () => {
   const router = useRouter();
@@ -18,6 +19,7 @@ const AdminLogin = () => {
 
   const [loading, setLoading] = useState(false);
   const [sentPasscode, setSentPasscode] = useState(false);
+  const [successMsg, setSuccessMsg] = useState('');
   const [error, setError] = useState("");
 
   // Auto login if token already exist
@@ -43,10 +45,11 @@ const AdminLogin = () => {
       const { data } = await api.post("/auth/send-otp", { phone: formData.email });
       if(data.success) {
         setSentPasscode(true);
+        setSuccessMsg(data.message || 'Passcode sent successfully');
       }
     } catch (err) {
       setError(
-        err.response?.data?.message || "Invalid credentials or server error"
+        err.response?.data?.message || "Invalid email or server error"
       );
     } finally {
       setLoading(false);
@@ -80,7 +83,7 @@ const AdminLogin = () => {
       }
     } catch (err) {
       setError(
-        err.response?.data?.message || "Invalid credentials or server error"
+        err.response?.data?.message || "Invalid email/passcode or server error"
       );
     } finally {
       setLoading(false);
@@ -88,25 +91,25 @@ const AdminLogin = () => {
   };
 
   return (
-    <div className="flex flex-col min-h-screen items-center justify-center bg-gray-100">
+    <div className="flex flex-col min-h-screen items-center justify-center sm:justify-start bg-gray-100">
       <div>
         <Image
           src='/logo.png'
           width={100}
           height={100}
-          className="w-[100px] h-[100px] rounded-full"
+          className="w-[140px] sm:w-[200px] h-[140px] sm:h-[200px] rounded-full"
           alt="app logo"
           priority={true}
         />
       </div>
-      <div className="w-full max-w-sm bg-white shadow-lg rounded-2xl p-8">
+      <div className="w-full max-w-md bg-white shadow-lg rounded-2xl p-8">
           <div className="flex flex-col items-center mb-6">
-            {sentPasscode ? <ShieldCheck className="w-12 h-12 text-blue-600 mb-2" /> : <LogInIcon className="w-12 h-12 text-blue-600 mb-2" />}
+            {sentPasscode ? <ShieldCheck className="w-9 h-9 text-indigo-600 mb-2" /> : <LogInIcon className="w-9 h-9 text-indigo-600 mb-2" />}
             <h2 className="text-2xl font-semibold text-gray-800">{sentPasscode ? 'Verify Security Code' : 'Admin Login'}</h2>
             <p className="text-sm text-gray-500">Access your dashboard</p>
           </div>
           {sentPasscode && <div className="flex flex-col items-center mb-6">
-            <p className="text-sm text-green-500">Passcode sent to your email, please check!</p>
+            <p className="text-sm text-green-500">{successMsg}</p>
           </div>}
           <form onSubmit={sentPasscode ? handleVerifyPasscode : handleSendPasscode} className="space-y-5">
             <div>
@@ -118,7 +121,7 @@ const AdminLogin = () => {
                 name="email"
                 value={formData.email}
                 onChange={handleChange}
-                className={`w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 outline-none ${sentPasscode ? 'bg-gray-200' : ''}`}
+                className={`w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-indigo-500 outline-none ${sentPasscode ? 'bg-gray-200' : ''}`}
                 placeholder="admin@example.com"
                 disabled={loading || sentPasscode}
                 required
@@ -136,7 +139,7 @@ const AdminLogin = () => {
                     name="passcode"
                     value={formData.passcode}
                     onChange={handleChange}
-                    className="w-full border rounded-lg px-3 py-2 pr-10 focus:ring-2 focus:ring-blue-500 outline-none"
+                    className="w-full border rounded-lg px-3 py-2 pr-10 focus:ring-2 focus:ring-indigo-500 outline-none"
                     placeholder="xxxxxx"
                     required
                   />
@@ -152,31 +155,30 @@ const AdminLogin = () => {
                     name="phone"
                     value={formData.phone}
                     onChange={handleChange}
-                    className="w-full border rounded-lg px-3 py-2 pr-10 focus:ring-2 focus:ring-blue-500 outline-none"
+                    className="w-full border rounded-lg px-3 py-2 pr-10 focus:ring-2 focus:ring-indigo-500 outline-none"
                     placeholder="+91 868 634 0975"
                     required
                   />
                 </div>
               </div>
-              </>
-            }
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Role <span className="text-md text-red-500">*</span>
-              </label>
-              <select
-                name="role"
-                value={formData.role}
-                onChange={handleChange}
-                disabled={loading || sentPasscode}
-                className={`w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 outline-none ${sentPasscode ? 'bg-gray-200' : ''}`}
-              >
-                <option value="">Select Role</option>
-                <option value="admin">Admin</option>
-                <option value="staff">Staff</option>
-                <option value="seller">Saller</option>
-              </select>
-            </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Role <span className="text-md text-red-500">*</span>
+                </label>
+                <select
+                  name="role"
+                  value={formData.role}
+                  onChange={handleChange}
+                  className={`w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-indigo-500 outline-none ${sentPasscode ? 'bg-gray-200' : ''}`}
+                >
+                  <option value="">Select Role</option>
+                  {roles.map((role) => (
+                    <option key={role.value} value={role.value}>{role.label}</option>
+                  ))}
+                </select>
+              </div>
+            </>}
+
             {error && (
               <p className="text-sm text-red-500 text-center mt-2">{error}</p>
             )}
@@ -184,13 +186,13 @@ const AdminLogin = () => {
             <button
               type="submit"
               disabled={loading}
-              className={`w-full flex items-center justify-center gap-2 ${sentPasscode ? 'bg-pink-500' : 'bg-blue-600'} hover:bg-blue-700 text-white font-medium py-2 rounded-lg transition`}
+              className={`w-full flex items-center justify-center gap-2 ${sentPasscode ? 'bg-pink-500' : 'bg-amber-600'} hover:bg-orange-500 hover:border-0 text-white font-medium py-2 rounded-lg transition`}
             >
               {loading ? (
                 <span className="animate-pulse">Sending...</span>
               ) : (
                 <>
-                  <LogIn size={18} />
+                  {sentPasscode ? <ArrowRight size={18} /> : ''}
                   {sentPasscode ? 'Verify Passcode' : 'Login'}
                 </>
               )}
