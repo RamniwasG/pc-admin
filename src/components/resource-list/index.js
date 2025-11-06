@@ -2,7 +2,6 @@ import {
   Edit2,
   Trash2,
 } from "lucide-react";
-import ProductFormDrawer from "../product-form-drawer";
 import { capitalizeWords } from "@/utils";
 
 function ResourceList({ loading, title, items, editing, onEdit, onDelete, renderSub }) {
@@ -27,7 +26,7 @@ function ResourceList({ loading, title, items, editing, onEdit, onDelete, render
               </div>
               <div className="flex items-center gap-2">
                 <button onClick={() => onEdit(it)} className="p-1 hover:bg-gray-100 rounded">
-                  Edit<Edit2 className="sm:h-4 lg:h-5 sm:w-4 lg:w-5" />
+                  <Edit2 className="sm:h-4 lg:h-5 sm:w-4 lg:w-5" />
                 </button>
                 <button onClick={() => onDelete(it)} className="p-1 hover:bg-gray-100 rounded">
                   <Trash2 className="sm:h-4 lg:h-5 sm:w-4 lg:w-5 text-red-500" />
