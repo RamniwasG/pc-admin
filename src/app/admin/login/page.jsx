@@ -196,7 +196,7 @@ const AdminLogin = () => {
             <button
               type="submit"
               disabled={loading}
-              className={`w-full flex items-center justify-center gap-2 ${sentPasscode ? 'bg-pink-500' : 'bg-amber-600'} hover:bg-orange-500 hover:border-0 text-white font-medium py-2 rounded-lg transition`}
+              className={`w-full flex items-center justify-center mt-3 gap-2 ${sentPasscode ? 'bg-pink-500' : 'bg-amber-600'} hover:bg-orange-500 hover:border-0 text-white font-medium py-2 rounded-lg transition`}
             >
               {loading ? (
                 <span className="animate-pulse">{sentPasscode ? 'Verifying' : 'Sending'}...</span>

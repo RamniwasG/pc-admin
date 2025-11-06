@@ -1,3 +1,4 @@
+"use client";
 import { useState, useRef, useEffect } from "react";
 import { User, Settings, Lock, LogOut } from "lucide-react";
 import { useAxios } from "@/api/axios-instance";

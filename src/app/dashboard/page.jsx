@@ -18,7 +18,6 @@ import {
 } from "recharts";
 import { useRouter } from "next/navigation";
 import { getUserToken } from "@/utils";
-import UserProfileDropdown from "@/components/user-profile-dropdown";
 import { useAxios } from "@/api/axios-instance";
 
 const Dashboard = () => {
@@ -115,15 +114,7 @@ const Dashboard = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-gray-50 p-6">
-      {/* Header */}
-      <div className="flex justify-between items-center gap-3">
-        <h1 className="text-3xl font-semibold text-gray-800 mb-8">
-          Dashboard
-        </h1>
-        <UserProfileDropdown />
-      </div>
-
+    <>
       {/* Summary Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-6 mb-10">
         {totals.map((item, index) => (
@@ -155,7 +146,7 @@ const Dashboard = () => {
             Data Distribution
           </h3>
           <div className="w-full h-80">
-            <ResponsiveContainer minWidth={0} minHeight={0}>
+            <ResponsiveContainer minWidth={100} minHeight={100}>
               <PieChart>
                 <Pie
                   data={pieData}
@@ -235,7 +226,7 @@ const Dashboard = () => {
           </div>
         </div>
       </div>
-    </div>
+    </>
   );
 };
 

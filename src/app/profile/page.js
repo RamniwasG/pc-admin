@@ -1,4 +1,5 @@
 "use client";
+import GoBack from "@/components/go-back";
 import { clearLoginCredentials, getUserData } from "@/utils";
 import { Mail, Shield, UserCircle } from "lucide-react";
 import Image from "next/image";
@@ -15,8 +16,8 @@ export default function UserProfileCard() {
 
   return (
     <div className="w-full min-h-screen mx-auto bg-gray-100 border border-gray-100 shadow-md rounded-2xl p-16 hover:shadow-lg transition">
-        <button className="px-4 py-2 text-md text-blue-600 rounded-lg hover:text-rose-500 transition">
-            <Link href="/dashboard">Back to dashboard</Link>
+        <button className="py-2 text-md text-blue-600 rounded-lg hover:text-rose-500 transition">
+            <GoBack href="/dashboard" label="Dashboard" classes="mb-0" />
         </button>
         <div className="flex flex-col justify-center items-center bg-white p-6">
             {/* Profile Image */}

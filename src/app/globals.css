@@ -38,3 +38,7 @@ body {
   height: calc(100% - 16rem);
   overflow-y: auto;
 }
+
+button:hover {
+  cursor: pointer;
+}

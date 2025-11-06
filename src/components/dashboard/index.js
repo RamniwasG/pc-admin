@@ -208,21 +208,21 @@ export default function AdminDashboardComp({ section }) {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <div className="max-w-7xl mx-auto p-4 md:p-4 grid grid-cols-12 gap-6">
+      <GoBack href="/dashboard" label="Back" classes="mb-0 px-2" />
+      <div className="max-w-7xl mx-auto p-2 md:p-2 grid grid-cols-12 gap-6">
         {/* Left sidebar */}
         <aside className="col-span-12 sm:col-span-4 md:col-span-3 bg-white rounded-lg shadow p-3">
-          <GoBack href="/dashboard" label="Dashboard" />
           {/* <div className="mb-4 flex items-center gap-2">
             <Grid className="h-6 w-6" />
             <h2 className="text-2xl font-semibold">Admin</h2>
           </div> */}
 
           <nav className="space-y-2">
-            <SidebarButton active={active === "users"} onClick={() => setActive("users")} icon={Layers} label="Users" />
-            <SidebarButton active={active === "products"} onClick={() => setActive("products")} icon={Layers} label="Products" />
             <SidebarButton active={active === "categories"} onClick={() => setActive("categories")} icon={Folder} label="Categories" />
             <SidebarButton active={active === "subcategories"} onClick={() => setActive("subcategories")} icon={Tag} label="Subcategories" />
+            <SidebarButton active={active === "products"} onClick={() => setActive("products")} icon={Layers} label="Products" />
             <SidebarButton active={active === "orders"} onClick={() => setActive("orders")} icon={ShoppingCart} label="Orders" />
+            <SidebarButton active={active === "users"} onClick={() => setActive("users")} icon={Layers} label="Users" />
           </nav>
 
           {/* <div className="mt-6 text-xs text-gray-400">Mock data saved in localStorage under key: <code>{MOCK_LS_KEY}</code></div> */}
@@ -231,10 +231,10 @@ export default function AdminDashboardComp({ section }) {
         {/* Right main panel */}
         <main className="col-span-12 sm:col-span-8 md:col-span-9">
           <div className="bg-white rounded-lg shadow p-4">
-            <div className="flex items-center justify-between mb-4">
-              {/* <h3 className="text-lg font-semibold capitalize">{active}</h3> */}
+            {/* <div className="flex items-center justify-between mb-4">
+              <h3 className="text-lg font-semibold capitalize">{active}</h3>
               <div>{loading ? <span className="text-sm text-gray-500">Loading...</span> : null}</div>
-            </div>
+            </div> */}
 
             <RightPanel />
           </div>

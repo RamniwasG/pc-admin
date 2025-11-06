@@ -1,12 +1,12 @@
 // src/api.js
+import { clearLoginCredentials } from "@/utils";
 import axios from "axios";
-import { useRouter } from "next/navigation";
+import { redirect } from "next/navigation";
 
 export const useAxios = () => {
-  const router = useRouter();
   const api = axios.create({
     baseURL: process.env.NEXT_PUBLIC_API_URL || "http://localhost:5002/api",
-    timeout: 10000,
+    timeout: 45000, // 45s
     headers: { 
       "Content-Type": "application/json",
       "Access-Control-Allow-Origin": "*"
@@ -17,14 +17,31 @@ export const useAxios = () => {
     const token = localStorage.getItem('token');
     if (token) config.headers.Authorization = `Bearer ${token}`;
     return config;
-  }, (error) => {
-    if (error.response?.status === 401) {
-      router.push("/login");
-    } else if (error.response?.status === 500) {
-      router.push("/error");
-    }
-    return Promise.reject(error);
   });
 
+  // 🧩 Add a response interceptor
+  api.interceptors.response.use(
+    (response) => response,
+    async (error) => {
+      const status = error?.response?.status;
+      // 🔐 If token expired or unauthorized
+      if (status === 401) {
+        console.log("Unauthorized! Redirecting to login...");
+        // optional: clear localStorage / sessionStorage
+        clearLoginCredentials();
+        // redirect to login
+        if (typeof window !== "undefined") {
+          redirect("/admin/login");
+        }
+      }
+
+      // ⚠️ Handle 403 / 500 etc. if needed
+      if (status === 500) {
+        redirect('/error');
+      }
+
+      return Promise.reject(error);
+    }
+  );
   return api
 };
