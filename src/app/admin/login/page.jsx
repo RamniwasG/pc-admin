@@ -115,7 +115,7 @@ const AdminLogin = () => {
             {/* <p className="text-sm text-gray-500">Access your dashboard</p> */}
           </div>
           {sentPasscode && userExist && <div className="flex flex-col items-center mb-3">
-            <p className="text-sm text-red bg-yellow-500">User Exists!</p>
+            <p className="text-sm text-red bg-blue-700">User Exists!</p>
           </div>}
           {sentPasscode && <div className="flex flex-col items-center mb-3">
             <p className="text-sm text-green-500">{successMsg}</p>

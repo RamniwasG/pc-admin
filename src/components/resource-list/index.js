@@ -10,7 +10,6 @@ function ResourceList({ loading, title, items, editing, onEdit, onDelete, render
     <div className={`space-y-2 ${title === 'subcategories list' ? 'categories-list' : ''}`}>
       <div className="flex items-center justify-between">
         <p className="text-lg font-semibold">{capitalizeWords(title)}</p>
-        {/* <ProductFormDrawer /> */}
       </div>
       <div className="space-y-2">
         {loading && <div className="text-sm text-gray-500">Loading...</div>}
@@ -28,7 +27,7 @@ function ResourceList({ loading, title, items, editing, onEdit, onDelete, render
               </div>
               <div className="flex items-center gap-2">
                 <button onClick={() => onEdit(it)} className="p-1 hover:bg-gray-100 rounded">
-                  <Edit2 className="sm:h-4 lg:h-5 sm:w-4 lg:w-5" />
+                  Edit<Edit2 className="sm:h-4 lg:h-5 sm:w-4 lg:w-5" />
                 </button>
                 <button onClick={() => onDelete(it)} className="p-1 hover:bg-gray-100 rounded">
                   <Trash2 className="sm:h-4 lg:h-5 sm:w-4 lg:w-5 text-red-500" />

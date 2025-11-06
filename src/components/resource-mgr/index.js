@@ -6,9 +6,8 @@ import ResourceList from "../resource-list";
 import { useMemo, useEffect, useState } from "react";
 import ProductFormDrawer from "../product-form-drawer";
 
-// --- Resource Manager: generic for categories/subcategories/products ---
 function ResourceManager({ loading, resource, items, extra = {}, onAdd, onUpdate, onDelete, editing, setEditing }) {
-  // resource: 'categories' | 'subcategories' | 'products'
+  // resource: 'categories' | 'subcategories' | 'products' | 'orders' | 'users'
   const isProduct = resource === "products";
   const isSub = resource === "subcategories";
 

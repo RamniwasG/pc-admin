@@ -21,21 +21,12 @@ Notes
 - The mock persists data in localStorage under key `admin_dashboard_mock` so data survives reloads.
 */
 "use client";
-import React, { useEffect, useMemo, useState } from "react";
-import MockAdapter from "axios-mock-adapter";
+import React, { useEffect, useState } from "react";
 import {
-  Grid,
-  Box,
-  List,
   ShoppingCart,
   Folder,
   Tag,
   Layers,
-  PlusCircle,
-  Edit2,
-  Trash2,
-  Save,
-  X,
 } from "lucide-react";
 import { useAxios } from "@/api/axios-instance";
 import SidebarButton from "@/components/sidebar-btn";
@@ -148,8 +139,7 @@ export default function AdminDashboardComp({ section }) {
     setProducts((s) => s.filter((p) => p._id !== id));
   }
 
-  // --- Orders actions (read-only in this mock) ---
-  // create order (for testing)
+  // create order
   async function createOrder(payload) {
     const res = await api.post("/orders", payload);
     setOrders((s) => [...s, res.data]);
@@ -212,11 +202,6 @@ export default function AdminDashboardComp({ section }) {
       <div className="max-w-7xl mx-auto p-2 md:p-2 grid grid-cols-12 gap-6">
         {/* Left sidebar */}
         <aside className="col-span-12 sm:col-span-4 md:col-span-3 bg-white rounded-lg shadow p-3">
-          {/* <div className="mb-4 flex items-center gap-2">
-            <Grid className="h-6 w-6" />
-            <h2 className="text-2xl font-semibold">Admin</h2>
-          </div> */}
-
           <nav className="space-y-2">
             <SidebarButton active={active === "categories"} onClick={() => setActive("categories")} icon={Folder} label="Categories" />
             <SidebarButton active={active === "subcategories"} onClick={() => setActive("subcategories")} icon={Tag} label="Subcategories" />
@@ -231,11 +216,6 @@ export default function AdminDashboardComp({ section }) {
         {/* Right main panel */}
         <main className="col-span-12 sm:col-span-8 md:col-span-9">
           <div className="bg-white rounded-lg shadow p-4">
-            {/* <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-semibold capitalize">{active}</h3>
-              <div>{loading ? <span className="text-sm text-gray-500">Loading...</span> : null}</div>
-            </div> */}
-
             <RightPanel />
           </div>
         </main>
