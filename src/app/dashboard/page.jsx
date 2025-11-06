@@ -67,11 +67,11 @@ const Dashboard = () => {
 
   // --- Dashboard data (replace with real API data later)
   const totals = [
-    { label: "Users", value: products.length || 5, icon: User, color: "bg-blue-500" },
-    { label: "Products", value: products.length || 10, icon: Package, color: "bg-blue-500" },
     { label: "Categories", value: categories.length, icon: Tags, color: "bg-green-500" },
     { label: "Subcategories", value: subcategories.length, icon: Layers, color: "bg-yellow-500" },
     { label: "Orders", value: orders.length || 3, icon: ShoppingCart, color: "bg-red-500" },
+    { label: "Products", value: products.length || 10, icon: Package, color: "bg-blue-500" },
+    { label: "Users", value: products.length || 5, icon: User, color: "bg-blue-500" },
   ];
 
   const pieData = [
@@ -124,7 +124,7 @@ const Dashboard = () => {
             onClick={() => router.push(`/dashboard/${item.label.toLowerCase()}`)}
           >
             <div>
-              <p className="sm:text-sm md:text-md lg:text-lg">{item.label}</p>
+              <p className="sm:text-md lg:text-xl">{item.label}</p>
               <h2 className="text-2xl font-bold text-gray-600">
                 {item.value}
               </h2>

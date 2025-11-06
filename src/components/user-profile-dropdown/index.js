@@ -37,11 +37,11 @@ export default function UserProfileDropdown() {
   return (
     <div className="relative" ref={dropdownRef}>
       <div className="flex justify-end items-center gap-2">
-        <p className="text-sm font-bold">{userProfile && userProfile.name}</p>
+        <p className="text-sm font-bold underline">{userProfile && userProfile.phone}</p>
         {/* Profile Avatar/Icon */}
         <button
             onClick={() => setOpen(!open)}
-            className="flex items-center justify-center w-10 h-10 rounded-full bg-gray-200 hover:bg-gray-300 cursor-pointer transition"
+            className="flex items-center justify-center w-10 h-10 rounded-full border bg-gray-200 hover:bg-gray-300 cursor-pointer transition"
         >
             <User className="w-5 h-5 text-gray-700" />
         </button>
