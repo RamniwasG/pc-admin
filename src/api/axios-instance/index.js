@@ -5,7 +5,7 @@ import { redirect } from "next/navigation";
 
 export const useAxios = () => {
   const api = axios.create({
-    baseURL: process.env.NEXT_PUBLIC_API_URL || "http://localhost:5002/api",
+    baseURL: "http://localhost:5002/api",
     timeout: 45000, // 45s
     headers: { 
       "Content-Type": "application/json",
@@ -36,9 +36,9 @@ export const useAxios = () => {
       }
 
       // ⚠️ Handle 403 / 500 etc. if needed
-      if (status === 500) {
-        redirect('/error');
-      }
+      // if (status === 500) {
+      //   redirect('/error');
+      // }
 
       return Promise.reject(error);
     }

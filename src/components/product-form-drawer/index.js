@@ -11,6 +11,8 @@ function getAddResourceText(resource, editing) {
       return `${editing ? 'Edit' : 'Add'} Subcategory`;
     case "products":
       return `${editing ? 'Edit' : 'Add'} Product`;
+    case "users":
+      return `${editing ? 'Edit' : 'Add'} User`;
     default:
       return "Add Resource";
   }

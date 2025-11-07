@@ -67,8 +67,8 @@ function ResourceManager({ loading, resource, items, extra = {}, onAdd, onUpdate
           onDelete={(it) => onDelete(it._id)}
           renderSub={(it) => {
             if (isProduct) {
-              const cat = extra.categories?.find((c) => c._id === it.categoryId)?.name || "-";
-              const sub = extra.subcategories?.find((s) => s._id === it.subcategoryId)?.name || "-";
+              const cat = extra.categories?.find((c) => c._id === it.category)?.name || "-";
+              const sub = extra.subcategories?.find((s) => s._id === it.subcategory)?.name || "-";
               return `${cat} / ${sub}`;
             }
             if (isSub) {

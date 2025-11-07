@@ -3,6 +3,7 @@ import {
   Trash2,
 } from "lucide-react";
 import { capitalizeWords } from "@/utils";
+import Image from "next/image";
 
 function ResourceList({ loading, title, items, editing, onEdit, onDelete, renderSub }) {
   return (
@@ -21,6 +22,7 @@ function ResourceList({ loading, title, items, editing, onEdit, onDelete, render
               className={`flex items-center justify-between border rounded p-2 ${editing?._id === it._id ? 'bg-lightblue' : 'bg-white'} hover:bg-gray-50 cursor-pointer`}
             >
               <div>
+                {/* {it.image && <Image src={it.image} alt={it.name || it.title || 'item image'} width={40} height={40} className="inline-block mr-2 rounded" />} */}
                 <div className="font-medium">{it.name || it.title || it._id}</div>
                 {renderSub && value && <div className="text-xs font-bold text-white bg-green-500 rounded p-1">{renderSub(it)}</div>}
               </div>

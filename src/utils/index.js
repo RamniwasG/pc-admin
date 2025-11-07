@@ -25,3 +25,20 @@ export const capitalizeWords = (str) => str.replace(/\b\w/g, (char) => char.toUp
 
 //With optional chaining (handles empty strings safely)
 export const capitalize = (str) => str?.[0]?.toUpperCase() + str?.slice(1) || "";
+
+export const formToJSON = (formData) => {
+  const obj = {};
+  formData.forEach((value, key) => {
+    // handle multiple entries with same key
+    if (obj[key]) {
+      if (Array.isArray(obj[key])) {
+        obj[key].push(value);
+      } else {
+        obj[key] = [obj[key], value];
+      }
+    } else {
+      obj[key] = value;
+    }
+  });
+  return obj;
+};

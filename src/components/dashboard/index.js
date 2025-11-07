@@ -33,6 +33,7 @@ import SidebarButton from "@/components/sidebar-btn";
 import ResourceManager from "@/components/resource-mgr";
 import OrdersPanel from "@/components/order-panel";
 import GoBack from "@/components/go-back";
+import UsersList from "../users";
 
 // --- Main Admin Dashboard ---
 export default function AdminDashboardComp({ section }) {
@@ -42,6 +43,7 @@ export default function AdminDashboardComp({ section }) {
   const [categories, setCategories] = useState([]);
   const [subcategories, setSubcategories] = useState([]);
   const [products, setProducts] = useState([]);
+  const [users, setUsers] = useState([]);
   const [orders, setOrders] = useState([]);
 
   // loading & editing states
@@ -52,16 +54,18 @@ export default function AdminDashboardComp({ section }) {
   async function fetchAll() {
     setLoading(true);
     try {
-      // const { data } = await api.get("/categories/getAll");
-      const [cats, subs] = await Promise.all([
+      const [cats, subs, prods, users] = await Promise.all([
         api.get("/categories/fetchAllCategories").then((r) => r.data),
         api.get("/subcategories/fetchAllSubCategories").then((r) => r.data),
-        // api.get("/products/fetchAllProducts").then((r) => r.data),
+        api.get("/products/fetchAllProducts").then((r) => r.data),
+        api.get("/auth/fetchAllUsers").then((r) => r.data),
         // api.get("/orders/getAll").then((r) => r.data),
       ]);
       setCategories(cats);
       setSubcategories(subs);
-      // setProducts(prods);
+      setProducts(prods);
+      setProducts(users);
+      setUsers(users);
       // setOrders(ords);
     } catch (e) {
       console.error(e);
@@ -112,7 +116,7 @@ export default function AdminDashboardComp({ section }) {
   async function addProduct(payload) {
     const formData = new FormData();
     const { title, description, price, stock, categoryId, subcategoryId,
-        brand, size, color, WUnit, weight, image, rating 
+        brand, size, color, WUnit, weight, image, rating, discount
     } = payload;
     formData.append("title", title);
     formData.append("description", description);
@@ -123,8 +127,9 @@ export default function AdminDashboardComp({ section }) {
     formData.append("brand", brand);
     formData.append("size", size);
     formData.append("color", color);
+    formData.append("discount", discount);
     formData.append("weight", weight + " " + WUnit);
-    formData.append("image", image);
+    formData.append("image", image.name);
     formData.append("rating", rating);
     const res = await api.post("/products/add", formData);
     setProducts((s) => [...s, res.data]);
@@ -182,6 +187,19 @@ export default function AdminDashboardComp({ section }) {
             loading={loading}
             items={products}
             extra={{ categories, subcategories }}
+            onAdd={addProduct}
+            onUpdate={updateProduct}
+            onDelete={deleteProduct}
+            editing={editing}
+            setEditing={setEditing}
+          />
+        );
+      case "users":
+        return (
+          <UsersList
+            resource="users"
+            loading={loading}
+            items={users}
             onAdd={addProduct}
             onUpdate={updateProduct}
             onDelete={deleteProduct}

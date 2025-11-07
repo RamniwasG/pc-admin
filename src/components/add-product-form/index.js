@@ -10,9 +10,11 @@ import ProductFormDrawer from "../product-form-drawer";
 function AddProductForm({ editing, setEditing, resource, onAdd, onUpdate, extra }) {
   // resource: 'categories' | 'subcategories' | 'products'
   const isProduct = resource === "products";
+  const isUser = resource === "users";
   const isSub = resource === "subcategories";
 
   const emptyForm = useMemo(() => {
+    // product empty form
     if (isProduct) return { 
         title: "", description: "", price: 0, discount: 0, // basic info
         categoryId: "", subcategoryId: "", // relational fields
@@ -20,16 +22,45 @@ function AddProductForm({ editing, setEditing, resource, onAdd, onUpdate, extra 
         size: "", color: "", WUnit: "", weight: "", // various product specs
         rating: 0, image: null // additional attributes
     };
-    if (isSub) return { name: "", category: "" };
+    
+    // user empty form
+    if(isUser) return {
+        name: "", email: "", role: "", isActive: ''
+    };
+
+    // subcategory empty form
+    if (isSub) return {
+        name: "", category: ""
+    };
+
+    // default category empty form
     return { name: "" };
-  }, [isProduct, isSub]);
+  }, [isProduct, isSub, isUser]);
 
   const [form, setForm] = useState(emptyForm);
 
   useEffect(() => {
+    let data = { name: "" };
     if (!editing) setForm(emptyForm);
-    else setForm(editing);
-  }, [editing, emptyForm]);
+    else {
+        if(isProduct) {
+            const editingWeightArr = editing.weight.split(" ");
+            data = {
+                ...editing,
+                WUnit: editingWeightArr[1],
+                weight: editingWeightArr[0],
+                categoryId: editing.category,
+                subcategoryId: editing.subcategory,
+            };
+        } else if(isUser) {
+            data = {
+                ...editing,
+                isActive: editing.isActive ? 'active' : 'inactive'
+            };
+        }
+        setForm(data);
+    }
+  }, [editing, emptyForm, isProduct, isUser]);
 
   async function submit(e) {
     e.preventDefault();
@@ -91,7 +122,7 @@ function AddProductForm({ editing, setEditing, resource, onAdd, onUpdate, extra 
                 <label className="block text-sm font-medium text-gray-700">Discount (%)</label>
                 <input
                     type="number"
-                    value={form.discount}
+                    value={parseInt(form.discount)}
                     onChange={(e) => setForm((f) => ({ ...f, discount: e.target.value }))}
                     required
                     className="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-blue-500 focus:border-blue-500"
@@ -102,7 +133,7 @@ function AddProductForm({ editing, setEditing, resource, onAdd, onUpdate, extra 
             {/* Category */}
             <div>
                 <label className="block text-sm font-medium text-gray-700">Subcategory</label>
-                <select value={form.categoryId || ""} onChange={(e) => setForm((f) => ({ ...f, categoryId: e.target.value, subcategoryId: "" }))} className="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-blue-500 focus:border-blue-500">
+                <select value={form.category || ""} onChange={(e) => setForm((f) => ({ ...f, categoryId: e.target.value, subcategoryId: "" }))} className="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-blue-500 focus:border-blue-500">
                 <option value="">Select category</option>
                 {extra.categories?.map((c) => <option key={c._id} value={c._id}>{c.name}</option>)}
                 </select>
@@ -215,12 +246,13 @@ function AddProductForm({ editing, setEditing, resource, onAdd, onUpdate, extra 
                 <label className="block text-sm font-medium text-gray-700">Product Image</label>
                 <input
                     type="file"
-                    multiple
-                    onChange={(e) => setForm((f) => ({ ...f, image: e.target.files }))}
+                    // multiple
+                    onChange={(e) => setForm((f) => ({ ...f, image: e.target.files[0] }))}
                     accept="image/*"
                     required
                     className="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-blue-500 focus:border-blue-500"
                 />
+                {form.image && <span>{form.image}</span>}
             </div>
 
             {/* Rating */}
@@ -236,7 +268,52 @@ function AddProductForm({ editing, setEditing, resource, onAdd, onUpdate, extra 
                 />
             </div>
             </div>
-        ) : isSub ? (
+        ) : isUser ? (
+        <div className="third-col space-y-2">
+            <div>
+              <label className="block text-sm font-medium text-gray-700">
+                User Name
+              </label>
+              <input
+                type="text"
+                value={form.name}
+                onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))}
+                name="name"
+                placeholder="Enter username"
+                className="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-blue-500 focus:border-blue-500"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700">
+                Email
+              </label>
+              <input
+                type="email"
+                value={form.email}
+                onChange={(e) => setForm((f) => ({ ...f, email: e.target.value }))}
+                name="email"
+                placeholder="Enter email"
+                className="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-blue-500 focus:border-blue-500"
+              />
+            </div>
+
+            {/* Category */}
+            <div>
+                <label className="block text-sm font-medium text-gray-700">Role</label>
+                <select value={form.role || ""} onChange={(e) => setForm((f) => ({ ...f, role: e.target.value }))} className="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-blue-500 focus:border-blue-500">
+                <option value="">Select category</option>
+                {extra.roles?.map((c) => <option key={c._id} value={c._id}>{c.name}</option>)}
+                </select>
+            </div>
+            <div>
+                <label className="block text-sm font-medium text-gray-700">Status</label>
+                <select value={form.isActive || ""} onChange={(e) => setForm((f) => ({ ...f, isActive: e.target.value }))} className="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-blue-500 focus:border-blue-500">
+                <option value="">Select status</option>
+                {extra.statusArr?.map((c) => <option key={c._id} value={c._id}>{c.name}</option>)}
+                </select>
+            </div>
+        </div>
+        ) : (isSub ? (
             <>
                 <input value={form.name || ""} onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))} placeholder="Subcategory title" className="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-blue-500 focus:border-blue-500" />
                 <input value={form.description || ""} onChange={(e) => setForm((f) => ({ ...f, description: e.target.value }))} placeholder="Description" className="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-blue-500 focus:border-blue-500" />
@@ -250,7 +327,7 @@ function AddProductForm({ editing, setEditing, resource, onAdd, onUpdate, extra 
                 <input value={form.name || ""} onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))} placeholder="Category title" className="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-blue-500 focus:border-blue-500" />
                 <input value={form.description || ""} onChange={(e) => setForm((f) => ({ ...f, description: e.target.value }))} placeholder="Description" className="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-blue-500 focus:border-blue-500" />
             </>
-        )}
+        ))}
 
         <div className="flex justify-end gap-3 mt-6">
             <button type="button" onClick={() => {
