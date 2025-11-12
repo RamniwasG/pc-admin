@@ -2,6 +2,7 @@
 import { useState } from "react";
 import { Plus, X } from "lucide-react";
 import AddProductForm from "../add-product-form";
+import { getUserData } from "@/utils";
 
 function getAddResourceText(resource, editing) {
   switch (resource) {
@@ -22,16 +23,18 @@ function getAddResourceText(resource, editing) {
 
 export default function ProductFormDrawer({ editing, setEditing, resource, onAdd, onUpdate, extra }) {
   const [open, setOpen] = useState(false);
+  const loggedInUser = getUserData();
   return (
     <div className="relative">
       {/* 🔘 Add Resource Button */}
-      <button
-        onClick={() => setOpen(true)}
-        className="flex items-center px-4 py-2 bg-blue-500 text-white font-medium rounded-lg hover:bg-blue-600"
-      >
-        <Plus size={18} className="mr-2"/>{getAddResourceText(resource, editing)}
-      </button>
-
+      {loggedInUser?.role !== 'super' && resource === 'users' ? null :
+        <button
+          onClick={() => setOpen(true)}
+          className="flex items-center px-4 py-2 bg-blue-500 text-white font-medium rounded-lg hover:bg-blue-600"
+        >
+          <Plus size={18} className="mr-2"/>{getAddResourceText(resource, editing)}
+        </button>
+    }
       {/* 🔲 Overlay (dim background) */}
       {(open || editing) && (
         <div

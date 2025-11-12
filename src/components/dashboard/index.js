@@ -144,6 +144,33 @@ export default function AdminDashboardComp({ section }) {
     setProducts((s) => s.filter((p) => p._id !== id));
   }
 
+  // --- Users actions ---
+  async function addUser(payload) {
+    const formData = new FormData();
+    const { name, email, image
+    } = payload;
+    const [firstName, lastName] = name.split(" ");
+    formData.append("profile", {firstName, lastName, avatarUrl: image.name });
+    formData.append("email", email);
+    const res = await api.post("/users/add", formData);
+    setUsers((s) => [...s, res.data]);
+  }
+  async function updateUser(id, payload) {
+    const formData = new FormData();
+    const { name, email, image
+    } = payload;
+    const [firstName, lastName] = name.split(" ");
+    formData.append("profile", {firstName, lastName, avatarUrl: image.name });
+    formData.append("email", email);
+    await api.put(`/users/${id}`, formData);
+    setUsers((s) => s.map((u) => (u._id === id ? { ...u, ...payload } : u)));
+  }
+  async function deleteUser(id) {
+    if (!confirm("Delete product?")) return;
+    await api.delete(`/users/${id}`);
+    setUsers((s) => s.filter((u) => u._id !== id));
+  }
+
   // create order
   async function createOrder(payload) {
     const res = await api.post("/orders", payload);
@@ -200,9 +227,9 @@ export default function AdminDashboardComp({ section }) {
             resource="users"
             loading={loading}
             items={users}
-            onAdd={addProduct}
-            onUpdate={updateProduct}
-            onDelete={deleteProduct}
+            onAdd={addUser}
+            onUpdate={updateUser}
+            onDelete={deleteUser}
             editing={editing}
             setEditing={setEditing}
           />

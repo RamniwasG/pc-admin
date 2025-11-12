@@ -8,25 +8,13 @@ export default function UsersList({ resource, loading, items, onAdd, onUpdate, o
   // Fake data (replace with API call)
 //   const [users, setUsers] = useState(items || []);
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 2;
+  const itemsPerPage = 10;
 
   // Pagination logic
   const totalPages = Math.ceil(items.length / itemsPerPage);
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
   const currentUsers = items.slice(indexOfFirstItem, indexOfLastItem);
-
-  // Handlers
-  const handleEdit = (user) => {
-    console.log("Edit user:", user);
-    // open edit modal / drawer here
-  };
-
-  const handleDelete = (userId) => {
-    if (confirm("Are you sure you want to delete this user?")) {
-      setUsers(items.filter((u) => u._id !== userId));
-    }
-  };
 
   return (
     <div className="p-6 bg-white rounded-xl shadow-md">
@@ -58,7 +46,14 @@ export default function UsersList({ resource, loading, items, onAdd, onUpdate, o
             </tr>
           </thead>
           <tbody>
-            {currentUsers.length > 0 ? (
+            {loading ? (
+              <tr>
+                <td colSpan="6" className="text-center py-6 text-gray-500 text-sm">
+                  Loading...
+                </td>
+              </tr>
+            ) :
+            !loading && currentUsers.length > 0 ? (
               currentUsers.map((user, index) => (
                 <tr
                   key={user._id}
@@ -89,8 +84,9 @@ export default function UsersList({ resource, loading, items, onAdd, onUpdate, o
                       <Pencil size={18} />
                     </button>
                     <button
-                      onClick={() => onDelete(user._id)}
-                      className="text-red-600 hover:text-red-800 p-1 ml-2"
+                      onClick={() => user.role === 'super' ? {} : onDelete(user._id)}
+                      className={`${user.role === 'super' ? 'text-gray-400' : 'text-red-600'} cursor-${user.role === 'super' ? 'not-allowed' : 'pointer'} hover:${user.role !== 'admin' ? 'text-red-800' : ''} p-1 ml-2`}
+                      disabled={user.role === 'super'}
                     >
                       <Trash2 size={18} />
                     </button>
