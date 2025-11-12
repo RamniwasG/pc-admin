@@ -12,7 +12,8 @@ function AddProductForm({ editing, setEditing, resource, onAdd, onUpdate, extra 
   const isProduct = resource === "products";
   const isUser = resource === "users";
   const isSub = resource === "subcategories";
-
+console.log("AddProductForm resource:", resource);
+console.log("editing:", editing);
   const emptyForm = useMemo(() => {
     // product empty form
     if (isProduct) return { 
@@ -40,9 +41,15 @@ function AddProductForm({ editing, setEditing, resource, onAdd, onUpdate, extra 
   const [form, setForm] = useState(emptyForm);
 
   useEffect(() => {
-    let data = { name: "" };
+    let data = { ...editing };
     if (!editing) setForm(emptyForm);
     else {
+        if(isSub) {
+            data = {
+                ...editing,
+                category: typeof editing.category === 'string' ? editing.category : editing.category._id
+            };
+        }
         if(isProduct) {
             const editingWeightArr = editing.weight.split(" ");
             data = {
@@ -60,7 +67,7 @@ function AddProductForm({ editing, setEditing, resource, onAdd, onUpdate, extra 
         }
         setForm(data);
     }
-  }, [editing, emptyForm, isProduct, isUser]);
+  }, [editing, emptyForm, isProduct, isUser,isSub]);
 
   async function submit(e) {
     e.preventDefault();
@@ -335,7 +342,7 @@ function AddProductForm({ editing, setEditing, resource, onAdd, onUpdate, extra 
                 setEditing(null); 
             }} className="w-full py-2 bg-red-500 text-white rounded-md font-medium hover:bg-blue-700 transition">
                 {/* <X className="h-4 w-4" /> */}
-                <span>Clear</span>
+                <span>Cancel</span>
             </button>
             <button type="submit" className="w-full py-2 bg-indigo-600 text-white rounded-md font-medium hover:bg-blue-700 transition">
                 {/* <Save className="h-4 w-4" /> */}

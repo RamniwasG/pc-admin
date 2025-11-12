@@ -30,12 +30,12 @@ body {
 }
 
 .third-col {
-  height: calc(100% - 8rem);
+  height: calc(100% - 4rem);
   overflow-y: auto;
 }
 
 .categories-list {
-  height: calc(100% - 16rem);
+  height: calc(100% - 3rem);
   overflow-y: auto;
 }
 

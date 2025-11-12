@@ -357,7 +357,7 @@ export default function AdminDashboard() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="bg-gray-50">
       <div className="max-w-7xl mx-auto p-4 md:p-6 grid grid-cols-12 gap-6">
         {/* Left sidebar */}
         <aside className="col-span-12 md:col-span-3 lg:col-span-2 bg-white rounded-lg shadow p-3">

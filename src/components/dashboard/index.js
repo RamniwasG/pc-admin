@@ -242,7 +242,7 @@ export default function AdminDashboardComp({ section }) {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="bg-gray-50">
       <GoBack href="/dashboard" label="Back" classes="mb-0 px-2" />
       <div className="max-w-7xl mx-auto p-2 md:p-2 grid grid-cols-12 gap-6">
         {/* Left sidebar */}

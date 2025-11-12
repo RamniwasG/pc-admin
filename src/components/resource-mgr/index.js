@@ -42,6 +42,7 @@ function ResourceManager({ loading, resource, items, extra = {}, onAdd, onUpdate
   }
 
   function startEdit(item) {
+    console.log("Editing item:", item);
     setEditing(item);
   }
 
@@ -59,7 +60,7 @@ function ResourceManager({ loading, resource, items, extra = {}, onAdd, onUpdate
           />
         </div>
         <ResourceList
-          title={`${resource} list`}
+          title={resource}
           loading={loading}
           items={items}
           editing={editing}
