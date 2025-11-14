@@ -156,18 +156,15 @@ export default function AdminDashboardComp({ section }) {
     setUsers((s) => [...s, res.data]);
   }
   async function updateUser(id, payload) {
-    const formData = new FormData();
-    const { name, email, image
+    const { email, phone, role, isActive
     } = payload;
-    const [firstName, lastName] = name.split(" ");
-    formData.append("profile", {firstName, lastName, avatarUrl: image.name });
-    formData.append("email", email);
-    await api.put(`/users/${id}`, formData);
+    console.log(payload)
+    await api.put(`/auth/update-profile/${id}`, { email, phone, role, isActive: isActive === 'active' ? true : false });
     setUsers((s) => s.map((u) => (u._id === id ? { ...u, ...payload } : u)));
   }
   async function deleteUser(id) {
-    if (!confirm("Delete product?")) return;
-    await api.delete(`/users/${id}`);
+    if (!confirm("Delete user?")) return;
+    await api.delete(`/auth/remove/${id}`);
     setUsers((s) => s.filter((u) => u._id !== id));
   }
 

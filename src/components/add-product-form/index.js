@@ -269,7 +269,7 @@ function AddProductForm({ editing, setEditing, resource, onAdd, onUpdate, extra 
             </div>
         ) : isUser ? (
         <div className="third-col space-y-2">
-            <div>
+            {/* <div>
               <label className="block text-sm font-medium text-gray-700">
                 User Name
               </label>
@@ -282,21 +282,39 @@ function AddProductForm({ editing, setEditing, resource, onAdd, onUpdate, extra 
                 disabled
                 className="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-blue-500 focus:border-blue-500 bg-gray-100 hover:cursor-not-allowed"
               />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700">
-                Email
-              </label>
-              <input
-                type="email"
-                value={form.email}
-                onChange={(e) => setForm((f) => ({ ...f, email: e.target.value }))}
-                name="email"
-                placeholder="Enter email"
-                disabled
-                className="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-blue-500 focus:border-blue-500 bg-gray-100 hover:cursor-not-allowed"
-              />
-            </div>
+            </div> */}
+            {form.role !== 'customer' &&
+                <div>
+                <label className="block text-sm font-medium text-gray-700">
+                    Email
+                </label>
+                <input
+                    type="email"
+                    value={form.email}
+                    onChange={(e) => setForm((f) => ({ ...f, email: e.target.value }))}
+                    name="email"
+                    placeholder="Enter email"
+                    disabled
+                    className="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-blue-500 focus:border-blue-500 bg-gray-100 hover:cursor-not-allowed"
+                />
+                </div>
+            }
+            {form.role === 'customer' &&
+                <div>
+                <label className="block text-sm font-medium text-gray-700">
+                    Phone
+                </label>
+                <input
+                    type="text"
+                    value={form.phone}
+                    onChange={(e) => setForm((f) => ({ ...f, phone: e.target.value }))}
+                    name="phone"
+                    placeholder="Enter phone"
+                    disabled
+                    className="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-blue-500 focus:border-blue-500 bg-gray-100 hover:cursor-not-allowed"
+                />
+                </div>
+            }
 
             {/* Category */}
             <div>
