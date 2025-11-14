@@ -1,10 +1,4 @@
-import {
-  Save,
-  X,
-} from "lucide-react";
-import ResourceList from "../resource-list";
 import { useMemo, useEffect, useState } from "react";
-import ProductFormDrawer from "../product-form-drawer";
 
 // --- Resource Manager: generic for categories/subcategories/products ---
 function AddProductForm({ editing, setEditing, resource, onAdd, onUpdate, extra }) {
@@ -12,8 +6,6 @@ function AddProductForm({ editing, setEditing, resource, onAdd, onUpdate, extra 
   const isProduct = resource === "products";
   const isUser = resource === "users";
   const isSub = resource === "subcategories";
-console.log("AddProductForm resource:", resource);
-console.log("editing:", editing);
   const emptyForm = useMemo(() => {
     // product empty form
     if (isProduct) return { 
@@ -26,7 +18,7 @@ console.log("editing:", editing);
     
     // user empty form
     if(isUser) return {
-        name: "", email: "", role: "", isActive: ''
+        name: "", email: "", phone: "", role: "", isActive: ''
     };
 
     // subcategory empty form
@@ -287,7 +279,8 @@ console.log("editing:", editing);
                 onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))}
                 name="name"
                 placeholder="Enter username"
-                className="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-blue-500 focus:border-blue-500"
+                disabled
+                className="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-blue-500 focus:border-blue-500 bg-gray-100 hover:cursor-not-allowed"
               />
             </div>
             <div>
@@ -300,7 +293,8 @@ console.log("editing:", editing);
                 onChange={(e) => setForm((f) => ({ ...f, email: e.target.value }))}
                 name="email"
                 placeholder="Enter email"
-                className="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-blue-500 focus:border-blue-500"
+                disabled
+                className="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-blue-500 focus:border-blue-500 bg-gray-100 hover:cursor-not-allowed"
               />
             </div>
 
@@ -308,7 +302,7 @@ console.log("editing:", editing);
             <div>
                 <label className="block text-sm font-medium text-gray-700">Role</label>
                 <select value={form.role || ""} onChange={(e) => setForm((f) => ({ ...f, role: e.target.value }))} className="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-blue-500 focus:border-blue-500">
-                <option value="">Select category</option>
+                <option value="">Select Role</option>
                 {extra.roles?.map((c) => <option key={c._id} value={c._id}>{c.name}</option>)}
                 </select>
             </div>
@@ -341,11 +335,9 @@ console.log("editing:", editing);
                 setForm(emptyForm);
                 setEditing(null); 
             }} className="w-full py-2 bg-red-500 text-white rounded-md font-medium hover:bg-blue-700 transition">
-                {/* <X className="h-4 w-4" /> */}
                 <span>Cancel</span>
             </button>
             <button type="submit" className="w-full py-2 bg-indigo-600 text-white rounded-md font-medium hover:bg-blue-700 transition">
-                {/* <Save className="h-4 w-4" /> */}
                 <span>{editing ? "Update" : "Save"}</span>
             </button>
         </div>

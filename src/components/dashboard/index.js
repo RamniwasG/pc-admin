@@ -34,6 +34,7 @@ import ResourceManager from "@/components/resource-mgr";
 import OrdersPanel from "@/components/order-panel";
 import GoBack from "@/components/go-back";
 import UsersList from "../users";
+import { sidebarMenuItems } from "@/constants";
 
 // --- Main Admin Dashboard ---
 export default function AdminDashboardComp({ section }) {
@@ -64,7 +65,6 @@ export default function AdminDashboardComp({ section }) {
       setCategories(cats);
       setSubcategories(subs);
       setProducts(prods);
-      setProducts(users);
       setUsers(users);
       // setOrders(ords);
     } catch (e) {
@@ -248,11 +248,15 @@ export default function AdminDashboardComp({ section }) {
         {/* Left sidebar */}
         <aside className="col-span-12 sm:col-span-4 md:col-span-3 bg-white rounded-lg shadow p-3">
           <nav className="space-y-2">
-            <SidebarButton active={active === "categories"} onClick={() => setActive("categories")} icon={Folder} label="Categories" />
-            <SidebarButton active={active === "subcategories"} onClick={() => setActive("subcategories")} icon={Tag} label="Subcategories" />
-            <SidebarButton active={active === "products"} onClick={() => setActive("products")} icon={Layers} label="Products" />
-            <SidebarButton active={active === "orders"} onClick={() => setActive("orders")} icon={ShoppingCart} label="Orders" />
-            <SidebarButton active={active === "users"} onClick={() => setActive("users")} icon={Layers} label="Users" />
+            {sidebarMenuItems.map((item) => (
+              <SidebarButton
+                key={item.label}
+                active={active === item.label.toLowerCase()}
+                onClick={() => setActive(item.label.toLowerCase())}
+                icon={item.icon}
+                label={item.label}
+              />
+            ))}
           </nav>
 
           {/* <div className="mt-6 text-xs text-gray-400">Mock data saved in localStorage under key: <code>{MOCK_LS_KEY}</code></div> */}

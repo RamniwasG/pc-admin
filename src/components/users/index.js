@@ -25,7 +25,7 @@ export default function UsersList({ resource, loading, items, onAdd, onUpdate, o
         resource={resource}
         loading={loading}
         rows={items}
-        cols={['name', 'email', 'role', 'status']}
+        cols={['name', 'email', 'role', 'status', 'createdAt', 'updatedAt']}
         onDelete={onDelete}
         setEditing={setEditing}
       />

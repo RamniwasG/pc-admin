@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Plus, X } from "lucide-react";
 import AddProductForm from "../add-product-form";
 import { getUserData } from "@/utils";
@@ -23,7 +23,13 @@ function getAddResourceText(resource, editing) {
 
 export default function ProductFormDrawer({ editing, setEditing, resource, onAdd, onUpdate, extra }) {
   const [open, setOpen] = useState(false);
-  const loggedInUser = getUserData();
+  const [loggedInUser, setLoggedInUser] = useState(null);
+  
+  useEffect(() => {
+    const user = getUserData();
+    setLoggedInUser(user);
+  }, []);
+  
   return (
     <div className="relative">
       {/* 🔘 Add Resource Button */}

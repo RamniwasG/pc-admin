@@ -1,4 +1,4 @@
-import { Lock, Settings, User } from "lucide-react";
+import { Layers, Lock, Package, Settings, ShoppingCart, Tag, User, Users } from "lucide-react";
 
 export const roles = [
   { value: "admin", label: "Admin" },
@@ -25,4 +25,12 @@ export const userPrifileMenuItems = [
   { label: "Profile", href: "/profile", icon: User },
   { label: "Settings", href: "/settings", icon: Settings },
   { label: "Change Password", href: "/change-password", icon: Lock },
+];
+
+export const sidebarMenuItems = [
+  { label: "Categories", href: "/categories", icon: Layers },
+  { label: "Subcategories", href: "/subcategories", icon: Tag },
+  { label: "Products", href: "/products", icon: Package },
+  { label: "Orders", href: "/orders", icon: ShoppingCart },
+  { label: "Users", href: "/users", icon: Users },
 ];

@@ -1,7 +1,4 @@
-import {
-  Save,
-  X,
-} from "lucide-react";
+"use client";
 import ResourceList from "../resource-list";
 import { useMemo, useEffect, useState } from "react";
 import ProductFormDrawer from "../product-form-drawer";

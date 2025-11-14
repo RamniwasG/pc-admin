@@ -8,7 +8,7 @@ export default function CustomTable({ resource, loading, rows, cols, onDelete, s
 //   const [items, setItems] = useState(rows || []);
   const [currentPage, setCurrentPage] = useState(1);
   const rowsPerPage = 10;
-  
+
   // Pagination logic
   const totalPages = Math.ceil(rows.length / rowsPerPage);
   const indexOfLastItem = currentPage * rowsPerPage;
@@ -22,8 +22,8 @@ export default function CustomTable({ resource, loading, rows, cols, onDelete, s
           <thead className="bg-gray-100">
             <tr>
               <th className="px-4 py-2 text-left text-sm font-semibold text-gray-700">#</th>
-              {cols.map((col, idx) => (
-                <th key={idx} className="px-4 py-2 text-left text-sm font-semibold text-gray-700">
+              {cols.map((col) => (
+                <th key={col} className="px-4 py-2 text-left text-sm font-semibold text-gray-700">
                   {capitalizeWords(col)}
                 </th>
               ))}
@@ -47,11 +47,11 @@ export default function CustomTable({ resource, loading, rows, cols, onDelete, s
                   <td className="px-4 py-2 text-sm text-gray-600">
                     {(currentPage - 1) * rowsPerPage + index + 1}
                   </td>
-                  <td className="px-4 py-2 text-sm text-gray-800">{item.name || '--'}</td>
-                  {(resource ==='categories' || resource === 'subcategories' ) && <td className="px-4 py-2 text-sm text-gray-800">{item.description || '--'}</td>}
+                  <td className="px-4 py-2 text-sm text-gray-800">{item.name || item.title || '--'}</td>
+                  {(['categories','subcategories','products'].includes(resource) ) && <td className="px-4 py-2 text-sm text-gray-800">{item.description || '--'}</td>}
                   {item?.category && <td className="px-4 py-2 text-sm text-gray-800">{item?.category?.name || '--'}</td>}
                   {item.role && (item.phone || item.email) && <td className="px-4 py-2 text-sm text-gray-600">{item.role === 'customer' ? item.phone : item.email}</td>}
-                  {item.role && <td className="px-4 py-2 text-sm text-gray-800 font-semibold">{item.role}</td>}
+                  {item.role && <td className="px-4 py-2 text-sm text-gray-800 font-semibold">{capitalizeWords(item.role)}</td>}
                   {Object.keys(item).includes('isActive') && <td className="px-4 py-2 text-sm">
                     <span
                       className={`px-2 py-1 rounded-full text-xs font-medium ${
@@ -63,6 +63,8 @@ export default function CustomTable({ resource, loading, rows, cols, onDelete, s
                       {item.isActive ? 'active' : 'inactive'}
                     </span>
                   </td>}
+                  {item.createdAt && <td className="px-4 py-2 text-sm text-gray-600">{new Date(item.createdAt).toLocaleDateString()}</td>}
+                  {item.updatedAt && <td className="px-4 py-2 text-sm text-gray-600">{new Date(item.updatedAt).toLocaleDateString()}</td>}
                   <td className="px-4 py-2 text-center">
                     <button
                       onClick={() => setEditing(item)}
