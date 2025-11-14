@@ -1,10 +1,10 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Pencil, Trash2 } from "lucide-react";
 import { capitalizeWords } from "@/utils";
 
-export default function CustomTable({ resource, loading, rows, cols, onDelete, setEditing }) {
- 
+export default function ProductsTable({ loading, rows, cols, onDelete, setEditing }) {
+  
   const [currentPage, setCurrentPage] = useState(1);
   const rowsPerPage = 10;
 
@@ -46,24 +46,33 @@ export default function CustomTable({ resource, loading, rows, cols, onDelete, s
                   <td className="px-4 py-2 text-sm text-gray-600">
                     {(currentPage - 1) * rowsPerPage + index + 1}
                   </td>
-                  <td className="px-4 py-2 text-sm text-gray-800">{item.name || item.title || '--'}</td>
-                  {(['categories','subcategories','products'].includes(resource) ) && <td className="px-4 py-2 text-sm text-gray-800">{item.description || '--'}</td>}
-                  {item?.category && <td className="px-4 py-2 text-sm text-gray-800">{item?.category?.name || '--'}</td>}
-                  {item.role && (item.phone || item.email) && <td className="px-4 py-2 text-sm text-gray-600">{item.role === 'customer' ? item.phone : item.email}</td>}
-                  {item.role && <td className="px-4 py-2 text-sm text-gray-800 font-semibold">{capitalizeWords(item.role)}</td>}
-                  {Object.keys(item).includes('isActive') && <td className="px-4 py-2 text-sm">
-                    <span
-                      className={`px-2 py-1 rounded-full text-xs font-medium ${
-                        !item.isActive
-                          ? "bg-red-100 text-red-700"
-                          : "bg-green-100 text-green-700"
-                      }`}
-                    >
-                      {item.isActive ? 'active' : 'inactive'}
-                    </span>
-                  </td>}
-                  {item.createdAt && <td className="px-4 py-2 text-sm text-gray-600">{new Date(item.createdAt).toLocaleDateString()}</td>}
-                  {item.updatedAt && <td className="px-4 py-2 text-sm text-gray-600">{new Date(item.updatedAt).toLocaleDateString()}</td>}
+                  {Object.keys(item).filter(k => k !== '_id' && k !== '__v').map((key => {
+                    let value = item[key];
+                    if(Array.isArray(value) && value.length > 0) {
+                        value = value.join(', ');
+                    } else if(Array.isArray(value) && value.length === 0) {
+                        value = '--';
+                    } else if(typeof value === 'boolean') {
+                        value = value || '--';
+                    }
+
+                    if(key === 'isActive' || key === 'isFeatured') {
+                        return <td key={key} className="px-4 py-2 text-sm">
+                            <span
+                            className={`px-2 py-1 rounded-full text-xs font-medium ${
+                                !item.isActive
+                                ? "bg-red-100 text-red-700"
+                                : "bg-green-100 text-green-700"
+                            }`}
+                            >
+                            {item.isActive ? 'active' : 'inactive'}
+                            </span>
+                        </td>
+                    }
+                    return <td key={key} className="px-4 py-2 text-sm text-gray-800">{value}</td>
+                }))}
+                  
+                  
                   <td className="px-4 py-2 text-center">
                     <button
                       onClick={() => setEditing(item)}
