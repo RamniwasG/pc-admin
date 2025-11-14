@@ -334,10 +334,10 @@ function AddProductForm({ editing, setEditing, resource, onAdd, onUpdate, extra 
             <button type="button" onClick={() => {
                 setForm(emptyForm);
                 setEditing(null); 
-            }} className="w-full py-2 bg-red-500 text-white rounded-md font-medium hover:bg-blue-700 transition">
+            }} className="w-full py-2 brand-bg-error text-white rounded-md font-medium transition">
                 <span>Cancel</span>
             </button>
-            <button type="submit" className="w-full py-2 bg-indigo-600 text-white rounded-md font-medium hover:bg-blue-700 transition">
+            <button type="submit" className="w-full py-2 brand-bg-success text-white rounded-md font-medium transition">
                 <span>{editing ? "Update" : "Save"}</span>
             </button>
         </div>

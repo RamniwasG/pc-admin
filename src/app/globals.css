@@ -36,9 +36,16 @@ body {
 
 .categories-list {
   height: calc(100% - 3rem);
-  overflow-y: auto;
 }
 
 button:hover {
   cursor: pointer;
+}
+
+.brand-bg-success {
+  background-color: #0ac5b2;
+}
+
+.brand-bg-error {
+  background-color: #fd2a36d4;
 }
