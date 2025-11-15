@@ -23,29 +23,22 @@ import { useAxios } from "@/api/axios-instance";
 const Dashboard = () => {
   const api = useAxios();
   // local state for lists
-  const [users, setUsers] = useState([]);
-  const [products, setProducts] = useState([]);
-  const [categories, setCategories] = useState([]);
-  const [subcategories, setSubcategories] = useState([]);
-  const [orders, setOrders] = useState([]);
-  // loading & editing states
+  const [data, setData] = useState({
+    categories: 0,
+    subcategories: 0,
+    products: 0,
+    orders: 0,
+    users: 0
+  });
   const [loading, setLoading] = useState(false);
 
   // fetch lists
-  async function fetchAll() {
+  async function fetchDashboardCounts() {
     setLoading(true);
     try {
-      // const { data } = await api.get("/categories/getAll");
-      const [cats, subs, prods] = await Promise.all([
-        api.get("/categories/fetchAllCategories").then((r) => r.data),
-        api.get("/subcategories/fetchAllSubCategories").then((r) => r.data),
-        api.get("/products/fetchAllProducts").then((r) => r.data),
-        // api.get("/orders/getAll").then((r) => r.data),
-      ]);
-      setCategories(cats);
-      setSubcategories(subs);
-      setProducts(prods);
-      // setOrders(ords);
+      const { data } = await api.get("/dashboard/counts");
+      console.log(data);
+      setData(data);
     } catch (e) {
       console.error(e);
       alert("Failed to load data");
@@ -62,24 +55,24 @@ const Dashboard = () => {
       router.push("/dashboard")
     }
     
-    fetchAll();
+    fetchDashboardCounts();
   }, [])
 
   // --- Dashboard data (replace with real API data later)
   const totals = [
-    { label: "Categories", value: categories.length, icon: Tags, color: "bg-green-500" },
-    { label: "Subcategories", value: subcategories.length, icon: Layers, color: "bg-yellow-500" },
-    { label: "Orders", value: orders.length || 3, icon: ShoppingCart, color: "bg-red-500" },
-    { label: "Products", value: products.length || 10, icon: Package, color: "bg-blue-500" },
-    { label: "Users", value: products.length || 5, icon: User, color: "bg-blue-500" },
+    { label: "Categories", value: data.categories, icon: Tags, color: "bg-green-500" },
+    { label: "Subcategories", value: data.subcategories, icon: Layers, color: "bg-yellow-500" },
+    { label: "Orders", value: data.orders || 0, icon: ShoppingCart, color: "bg-red-500" },
+    { label: "Products", value: data.products || 0, icon: Package, color: "bg-blue-500" },
+    { label: "Users", value: data.users || 0, icon: User, color: "bg-blue-500" },
   ];
 
   const pieData = [
-    { name: "Users", value: users.length || 5, color: "bg-blue-500" },
-    { name: "Products", value: products.length || 10, color: "#3b82f6" },
-    { name: "Categories", value: categories.length, color: "#22c55e" },
-    { name: "Subcategories", value: subcategories.length, color: "#eab308" },
-    { name: "Orders", value: orders.length || 3, color: "#ef4444" },
+    { name: "Users", value: data.users || 0, color: "bg-blue-500" },
+    { name: "Products", value: data.products || 0, color: "#3b82f6" },
+    { name: "Categories", value: data.categories, color: "#22c55e" },
+    { name: "Subcategories", value: data.subcategories, color: "#eab308" },
+    { name: "Orders", value: data.orders || 0, color: "#ef4444" },
   ];
 
   const recentOrders = [
@@ -116,7 +109,8 @@ const Dashboard = () => {
   return (
     <>
       {/* Summary Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-6 mb-10">
+      {loading && <p className="text-md">Loading...</p>}
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 mb-10">
         {totals.map((item, index) => (
           <div
             key={index}

@@ -5,7 +5,7 @@ import CustomTable from "../custom-table";
 
 export default function UsersList({ resource, loading, items, onAdd, onUpdate, onDelete, editing, setEditing }) {
   return (
-    <div className="p-6 bg-white rounded-xl shadow-md">
+    <div className="bg-white rounded-xl shadow-md">
       <div className="flex justify-between items-center mb-4">
         <h2 className="text-lg font-semibold mb-4">{capitalizeWords(`${resource} list`)}</h2>
         <ProductFormDrawer

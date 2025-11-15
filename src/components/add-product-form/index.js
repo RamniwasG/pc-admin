@@ -285,57 +285,56 @@ function AddProductForm({ editing, setEditing, resource, onAdd, onUpdate, extra 
             </div> */}
             {form.role !== 'customer' &&
                 <div>
-                <label className="block text-sm font-medium text-gray-700">
-                    Email
-                </label>
-                <input
-                    type="email"
-                    value={form.email}
-                    onChange={(e) => setForm((f) => ({ ...f, email: e.target.value }))}
-                    name="email"
-                    placeholder="Enter email"
-                    disabled
-                    className="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-blue-500 focus:border-blue-500 bg-gray-100 hover:cursor-not-allowed"
-                />
+                    <label className="block text-sm font-medium text-gray-700">
+                        Email
+                    </label>
+                    <input
+                        type="email"
+                        value={form.email}
+                        onChange={(e) => setForm((f) => ({ ...f, email: e.target.value }))}
+                        name="email"
+                        placeholder="Enter email"
+                        disabled
+                        className="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-blue-500 focus:border-blue-500 bg-gray-100 hover:cursor-not-allowed"
+                    />
                 </div>
             }
             {form.role === 'customer' &&
                 <div>
-                <label className="block text-sm font-medium text-gray-700">
-                    Phone
-                </label>
-                <input
-                    type="text"
-                    value={form.phone}
-                    onChange={(e) => setForm((f) => ({ ...f, phone: e.target.value }))}
-                    name="phone"
-                    placeholder="Enter phone"
-                    disabled
-                    className="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-blue-500 focus:border-blue-500 bg-gray-100 hover:cursor-not-allowed"
-                />
+                    <label className="block text-sm font-medium text-gray-700">
+                        Phone
+                    </label>
+                    <input
+                        type="text"
+                        value={form.phone}
+                        onChange={(e) => setForm((f) => ({ ...f, phone: e.target.value }))}
+                        name="phone"
+                        placeholder="Enter phone"
+                        disabled
+                        className="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-blue-500 focus:border-blue-500 bg-gray-100 hover:cursor-not-allowed"
+                    />
                 </div>
             }
 
-            {/* Category */}
             <div>
                 <label className="block text-sm font-medium text-gray-700">Role</label>
                 <select value={form.role || ""} onChange={(e) => setForm((f) => ({ ...f, role: e.target.value }))} className="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-blue-500 focus:border-blue-500">
-                <option value="">Select Role</option>
-                {extra.roles?.map((c) => <option key={c._id} value={c._id}>{c.name}</option>)}
+                    <option value="">Select Role</option>
+                    {extra.roles?.map((c) => <option key={c._id} value={c._id}>{c.name}</option>)}
                 </select>
             </div>
             <div>
                 <label className="block text-sm font-medium text-gray-700">Status</label>
                 <select value={form.isActive || ""} onChange={(e) => setForm((f) => ({ ...f, isActive: e.target.value }))} className="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-blue-500 focus:border-blue-500">
-                <option value="">Select status</option>
-                {extra.statusArr?.map((c) => <option key={c._id} value={c._id}>{c.name}</option>)}
+                    <option value="">Select status</option>
+                    {extra.statusArr?.map((c) => <option key={c._id} value={c._id}>{c.name}</option>)}
                 </select>
             </div>
         </div>
         ) : (isSub ? (
             <>
-                <input value={form.name || ""} onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))} placeholder="Subcategory title" className="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-blue-500 focus:border-blue-500" />
-                <input value={form.description || ""} onChange={(e) => setForm((f) => ({ ...f, description: e.target.value }))} placeholder="Description" className="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-blue-500 focus:border-blue-500" />
+                <input value={form.name || ""} onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))} placeholder="Subcategory title" className="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-blue-500 focus:border-blue-500" required />
+                <input value={form.description || ""} onChange={(e) => setForm((f) => ({ ...f, description: e.target.value }))} placeholder="Description (Optional)" className="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-blue-500 focus:border-blue-500" />
                 <select value={typeof form.category === 'string' ? form.category : form.category?._id} onChange={(e) => setForm((f) => ({ ...f, category: e.target.value }))} className="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-blue-500 focus:border-blue-500">
                     <option value="">Select category</option>
                     {extra.categories?.map((c) => <option key={c._id} value={c._id}>{c.name}</option>)}
@@ -343,8 +342,8 @@ function AddProductForm({ editing, setEditing, resource, onAdd, onUpdate, extra 
             </>
         ) : (
             <>
-                <input value={form.name || ""} onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))} placeholder="Category title" className="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-blue-500 focus:border-blue-500" />
-                <input value={form.description || ""} onChange={(e) => setForm((f) => ({ ...f, description: e.target.value }))} placeholder="Description" className="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-blue-500 focus:border-blue-500" />
+                <input value={form.name || ""} onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))} placeholder="Category title" className="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-blue-500 focus:border-blue-500" required />
+                <input value={form.description || ""} onChange={(e) => setForm((f) => ({ ...f, description: e.target.value }))} placeholder="Description (Optional)" className="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-blue-500 focus:border-blue-500" />
             </>
         ))}
 

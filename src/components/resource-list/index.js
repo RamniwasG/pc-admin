@@ -15,14 +15,14 @@ function ResourceList({title, loading, items, editing, onEdit, onDelete }) {
         <p className="text-lg font-semibold">{capitalizeWords(title)}</p>
       </div>
       <div className="space-y-2">
-        {loading && <div className="text-sm text-gray-500">Loading...</div>}
-        {!loading && items.length === 0 && <div className="text-sm text-gray-500">No items</div>}
-        {items.length > 0 && (title === 'categories' || title === 'subcategories')
+        {(title === 'categories' || title === 'subcategories')
           ? <CustomTable
             resource={title}
             loading={loading}
             rows={items}
-            cols={Object.keys(rest)}
+            cols={title === 'categories' ?
+              ['Title', 'Description', 'CreatedAt', 'UpdatedAt'] : 
+              ['Title', 'Description', 'Category', 'CreatedAt', 'UpdatedAt']}
             onDelete={onDelete}
             setEditing={onEdit}
           />

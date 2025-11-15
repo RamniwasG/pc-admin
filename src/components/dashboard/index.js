@@ -1,33 +1,5 @@
-/*
-Admin Dashboard - Sidebar + CRUD
-Tech: React (single-file), Tailwind CSS, lucide-react, api, api-mock-adapter
-
-Features:
-- Left sidebar navigation: Categories, Subcategories, Products, Orders
-- Right main panel shows List and Add/Edit forms for the selected resource
-- Fully functional mock backend implemented with api-mock-adapter and persisted to localStorage (so no external server required)
-- Uses Tailwind for styling and lucide-react for icons
-- api abstraction included; replace mock adapter with real API baseURL easily
-
-Usage
-1. Put this file into a React project (CRA or Next.js page). Save as AdminDashboard.jsx and import into your app.
-2. Install dependencies:
-   npm install api api-mock-adapter lucide-react
-3. Ensure Tailwind CSS is set up in the project.
-4. Start the app — you'll have a working admin dashboard with mock API backed by localStorage.
-
-Notes
-- To connect a real backend, remove or disable the `setupMockAdapter()` call and set api.defaults.baseURL to your API base URL.
-- The mock persists data in localStorage under key `admin_dashboard_mock` so data survives reloads.
-*/
 "use client";
 import React, { useEffect, useState } from "react";
-import {
-  ShoppingCart,
-  Folder,
-  Tag,
-  Layers,
-} from "lucide-react";
 import { useAxios } from "@/api/axios-instance";
 import SidebarButton from "@/components/sidebar-btn";
 import ResourceManager from "@/components/resource-mgr";
@@ -35,6 +7,7 @@ import OrdersPanel from "@/components/order-panel";
 import GoBack from "@/components/go-back";
 import UsersList from "../users";
 import { sidebarMenuItems } from "@/constants";
+import ConfirmDialog from "@/shared/confirm-dialog";
 
 // --- Main Admin Dashboard ---
 export default function AdminDashboardComp({ section }) {
@@ -50,6 +23,9 @@ export default function AdminDashboardComp({ section }) {
   // loading & editing states
   const [loading, setLoading] = useState(false);
   const [editing, setEditing] = useState(null); // item being edited
+  const [open, setOpen] = useState(false);
+  const [selectedId, setSelectedId] = useState('');
+  const [error, setError] = useState('');
 
   // fetch lists
   async function fetchAll() {
@@ -69,7 +45,7 @@ export default function AdminDashboardComp({ section }) {
       // setOrders(ords);
     } catch (e) {
       console.error(e);
-      alert("Failed to load data");
+      setError(e);
     }
     setLoading(false);
   }
@@ -80,19 +56,35 @@ export default function AdminDashboardComp({ section }) {
 
   // --- Category actions ---
   async function addCategory(payload) {
-    const res = await api.post("/categories/add", payload);
-    setCategories((s) => [...s, res.data]);
+    try {
+      const res = await api.post("/categories/add", payload);
+      setCategories((s) => [...s, res.data]);
+    } catch(error) {
+      setError(error);
+    }
   }
   async function updateCategory(id, payload) {
-    await api.put(`/categories/${id}`, payload);
-    setCategories((s) => s.map((c) => (c._id === id ? { ...c, ...payload } : c)));
+    try {
+      await api.put(`/categories/${id}`, payload);
+      setCategories((s) => s.map((c) => (c._id === id ? { ...c, ...payload } : c)));
+    } catch(error) {
+      setError(error);
+    }
   }
   async function deleteCategory(id) {
-    if (!confirm("Delete category?")) return;
-    await api.delete(`/categories/${id}`);
-    setCategories((s) => s.filter((c) => c._id !== id));
-    // refresh dependant lists
-    fetchAll();
+    setOpen(true);
+    setSelectedId(id);
+  }
+
+  async function handleDelete() {
+    try {
+      await api.delete(`/categories/${selectedId}`);
+      setCategories((s) => s.filter((c) => c._id !== selectedId));
+      // refresh dependant lists
+      fetchAll();
+    } catch(err) {
+      setError(err);
+    }
   }
 
   // --- Subcategory actions ---
@@ -163,9 +155,12 @@ export default function AdminDashboardComp({ section }) {
     setUsers((s) => s.map((u) => (u._id === id ? { ...u, ...payload } : u)));
   }
   async function deleteUser(id) {
-    if (!confirm("Delete user?")) return;
-    await api.delete(`/auth/remove/${id}`);
-    setUsers((s) => s.filter((u) => u._id !== id));
+    try {
+      await api.delete(`/auth/remove/${id}`);
+      setUsers((s) => s.filter((u) => u._id !== id));
+    } catch(error) {
+      setError(error);
+    }
   }
 
   // create order
@@ -238,11 +233,19 @@ export default function AdminDashboardComp({ section }) {
     }
   }
 
-  return (
+  return (<>
+    <ConfirmDialog
+      open={open}
+      onClose={() => setOpen(false)}
+      onConfirm={handleDelete}
+      title="Delete User?"
+      message="This action cannot be undone."
+    />
     <div className="bg-gray-50">
       <GoBack href="/dashboard" label="Back" classes="mb-0 px-2" />
       <div className="mx-auto grid grid-cols-12 gap-6">
         {/* Left sidebar */}
+        {error && <p className="bg-red text-sm">{error}</p>}
         <aside className="col-span-12 sm:col-span-4 md:col-span-2 bg-white rounded-lg shadow p-3">
           <nav className="space-y-2">
             {sidebarMenuItems.map((item) => (
@@ -262,11 +265,13 @@ export default function AdminDashboardComp({ section }) {
         {/* Right main panel */}
         <main className="col-span-12 sm:col-span-8 md:col-span-10">
           <div className="bg-white rounded-lg shadow p-4">
+            {error}
             <RightPanel />
           </div>
         </main>
       </div>
     </div>
+    </>
   );
 }
 
