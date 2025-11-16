@@ -1,11 +1,13 @@
+import Link from "next/link";
+
 const SidebarButton = ({ active, onClick, icon: Icon, label }) => (
-  <button
+  <Link
+    href={`/dashboard/${label.toLowerCase()}`}
     onClick={onClick}
-    className={`w-full text-left flex items-center gap-3 px-4 py-2 rounded-md hover:bg-gray-100 ${active ? "bg-gray-100 font-semibold" : ""}`}
-  >
+    className={`flex item-center gap-3 p-1 ${active ? 'bg-yellow-100 font-bold' : 'bg-white'}`}>
     <Icon size={24} className="h-6 w-6" />
     <span className="text-md">{label}</span>
-  </button>
+  </Link>
 );
 
 export default SidebarButton;

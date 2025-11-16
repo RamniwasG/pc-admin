@@ -48,7 +48,7 @@ export default function CustomTable({ resource, loading, rows, cols, onDelete, s
                   </td>
                   <td className="px-4 py-2 text-sm text-gray-800">{item.name || item.title || '--'}</td>
                   {(['categories','subcategories','products'].includes(resource) ) && <td className="px-4 py-2 text-sm text-gray-800">{item.description || '--'}</td>}
-                  {item?.category && <td className="px-4 py-2 text-sm text-gray-800">{item?.category || '--'}</td>}
+                  {item?.category && <td className="px-4 py-2 text-sm text-gray-800">{item?.category?.name || '--'}</td>}
                   {item.role && (item.phone || item.email) && <td className="px-4 py-2 text-sm text-gray-600">{item.role === 'customer' ? item.phone : item.email}</td>}
                   {item.role && <td className="px-4 py-2 text-sm text-gray-800 font-semibold">{capitalizeWords(item.role)}</td>}
                   {Object.keys(item).includes('isActive') && <td className="px-4 py-2 text-sm">
