@@ -21,6 +21,7 @@ const AdminLogin = () => {
   const [loading, setLoading] = useState(false);
   const [sentPasscode, setSentPasscode] = useState(false);
   const [userExist, setUserExist] = useState(false);
+  const [existingUser, setExistingUser] = useState(null);
   const [successMsg, setSuccessMsg] = useState('');
   const [error, setError] = useState("");
 
@@ -49,6 +50,7 @@ const AdminLogin = () => {
         setSentPasscode(true);
         if(data.user) {
           setUserExist(true);
+          setExistingUser(data.user);
         }
         setSuccessMsg(data.message || 'Passcode sent successfully');
       }
@@ -72,7 +74,7 @@ const AdminLogin = () => {
         phone: email,
         otp: passcode,
         mobile: `+91${phone}`,
-        role
+        role: role || existingUser?.role
       });
       const { token, user } = data;
       setUserToken(token);

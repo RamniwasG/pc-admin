@@ -1,7 +1,10 @@
+import SmBtnLoader from "@/shared/loaders/sm-btn-loader";
+import { Upload } from "lucide-react";
+import Image from "next/image";
 import { useMemo, useEffect, useState } from "react";
 
 // --- Resource Manager: generic for categories/subcategories/products ---
-function AddProductForm({ editing, setEditing, resource, onAdd, onUpdate, extra }) {
+function AddProductForm({ editing, setEditing, resource, onAdd, onUpdate, extra, setOpen }) {
   // resource: 'categories' | 'subcategories' | 'products'
   const isProduct = resource === "products";
   const isUser = resource === "users";
@@ -13,7 +16,7 @@ function AddProductForm({ editing, setEditing, resource, onAdd, onUpdate, extra 
         categoryId: "", subcategoryId: "", // relational fields
         stock: 0, brand: "", // inventory details
         size: "", color: "", WUnit: "", weight: "", // various product specs
-        rating: 0, image: null // additional attributes
+        rating: 0 // additional attributes
     };
     
     // user empty form
@@ -31,6 +34,8 @@ function AddProductForm({ editing, setEditing, resource, onAdd, onUpdate, extra 
   }, [isProduct, isSub, isUser]);
 
   const [form, setForm] = useState(emptyForm);
+  const [images, setImages] = useState([]);
+  const [preview, setPreview] = useState([]);
 
   useEffect(() => {
     let data = { ...editing };
@@ -61,8 +66,15 @@ function AddProductForm({ editing, setEditing, resource, onAdd, onUpdate, extra 
     }
   }, [editing, emptyForm, isProduct, isUser,isSub]);
 
+  const handleImageChange = (e) => {
+    const files = Array.from(e.target.files);
+    setImages(files);
+    setPreview(files.map((file) => URL.createObjectURL(file)));
+  };
+
   async function submit(e) {
     e.preventDefault();
+    form.images = images;
     if (editing) {
       await onUpdate(editing._id, form);
     } else {
@@ -97,7 +109,6 @@ function AddProductForm({ editing, setEditing, resource, onAdd, onUpdate, extra 
                 <textarea
                     value={form.description}
                     onChange={(e) => setForm((f) => ({ ...f, description: e.target.value }))}
-                    required
                     className="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-blue-500 focus:border-blue-500"
                     placeholder="Enter Description"
                 />
@@ -123,7 +134,6 @@ function AddProductForm({ editing, setEditing, resource, onAdd, onUpdate, extra 
                     type="number"
                     value={parseInt(form.discount)}
                     onChange={(e) => setForm((f) => ({ ...f, discount: e.target.value }))}
-                    required
                     className="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-blue-500 focus:border-blue-500"
                     placeholder="Enter Discount"
                 />
@@ -131,8 +141,8 @@ function AddProductForm({ editing, setEditing, resource, onAdd, onUpdate, extra 
 
             {/* Category */}
             <div>
-                <label className="block text-sm font-medium text-gray-700">Subcategory</label>
-                <select value={form.category || ""} onChange={(e) => setForm((f) => ({ ...f, categoryId: e.target.value, subcategoryId: "" }))} className="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-blue-500 focus:border-blue-500">
+                <label className="block text-sm font-medium text-gray-700">Category</label>
+                <select value={form.categoryId || ""} onChange={(e) => setForm((f) => ({ ...f, categoryId: e.target.value }))} className="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-blue-500 focus:border-blue-500">
                 <option value="">Select category</option>
                 {extra.categories?.map((c) => <option key={c._id} value={c._id}>{c.name}</option>)}
                 </select>
@@ -154,7 +164,6 @@ function AddProductForm({ editing, setEditing, resource, onAdd, onUpdate, extra 
                     type="number"
                     value={form.stock}
                     onChange={(e) => setForm((f) => ({ ...f, stock: e.target.value }))}
-                    required
                     className="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-blue-500 focus:border-blue-500"
                     placeholder="Enter Stock"
                 />
@@ -179,7 +188,6 @@ function AddProductForm({ editing, setEditing, resource, onAdd, onUpdate, extra 
                 <select
                     value={form.size}
                     onChange={(e) => setForm((f) => ({ ...f, size: e.target.value }))}
-                    required
                     className="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-blue-500 focus:border-blue-500"
                 >
                     <option value="">Select Size</option>
@@ -197,7 +205,6 @@ function AddProductForm({ editing, setEditing, resource, onAdd, onUpdate, extra 
                 <select
                     value={form.color}
                     onChange={(e) => setForm((f) => ({ ...f, color: e.target.value }))}
-                    required
                     className="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-blue-500 focus:border-blue-500"
                 >
                     <option value="">Select Color</option>
@@ -215,7 +222,6 @@ function AddProductForm({ editing, setEditing, resource, onAdd, onUpdate, extra 
                 <select
                     value={form.WUnit}
                     onChange={(e) => setForm((f) => ({ ...f, WUnit: e.target.value }))}
-                    required
                     className="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-blue-500 focus:border-blue-500"
                 >
                     <option value="">Select Weight Unit</option>
@@ -233,25 +239,50 @@ function AddProductForm({ editing, setEditing, resource, onAdd, onUpdate, extra 
                         type="number"
                         value={form.weight}
                         onChange={(e) => setForm((f) => ({ ...f, weight: e.target.value }))}
-                        required
                         className="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-blue-500 focus:border-blue-500"
                         placeholder="Enter Weight"
                     />
                 </div>
             )}
 
-            {/* Image Upload */}
-            <div>
-                <label className="block text-sm font-medium text-gray-700">Product Image</label>
-                <input
-                    type="file"
-                    // multiple
-                    onChange={(e) => setForm((f) => ({ ...f, image: e.target.files[0] }))}
-                    accept="image/*"
-                    required
-                    className="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-blue-500 focus:border-blue-500"
-                />
-                {form.image && <span>{form.image}</span>}
+            {/* Images */}
+            <div className="space-y-2">
+                <label className="text-sm font-medium text-gray-700">Product Images</label>
+
+                <div className="flex items-center gap-3">
+                    <label
+                        htmlFor="imageUpload"
+                        className="flex items-center gap-2 px-4 py-2 border cursor-pointer border-gray-300 rounded-lg bg-gray-50 hover:bg-gray-100 text-gray-700 text-sm"
+                    >
+                        <Upload className="w-4 h-4" /> Upload Images
+                    </label>
+                    <input
+                        id="imageUpload"
+                        type="file"
+                        name="images"
+                        accept="image/*"
+                        multiple
+                        className="hidden"
+                        onChange={handleImageChange}
+                    />
+                </div>
+
+                {/* Preview */}
+                {preview.length > 0 && (
+                    <div className="grid grid-cols-3 gap-3 mt-3">
+                        {preview.map((src, idx) => (
+                            <div key={idx} className="w-full h-24 bg-gray-100 rounded-lg overflow-hidden">
+                                <Image
+                                    src={src}
+                                    width={80}
+                                    height={80}
+                                    alt="preview"
+                                    className="w-full h-full object-cover"
+                                />
+                            </div>
+                        ))}
+                    </div>
+                )}
             </div>
 
             {/* Rating */}
@@ -351,12 +382,15 @@ function AddProductForm({ editing, setEditing, resource, onAdd, onUpdate, extra 
             <button type="button" onClick={() => {
                 setForm(emptyForm);
                 setEditing(null); 
+                setOpen(false);
             }} className="w-full py-2 brand-bg-error text-white rounded-md font-medium transition">
                 <span>Cancel</span>
             </button>
             <button type="submit" className="w-full py-2 brand-bg-success text-white rounded-md font-medium transition">
                 <span>{editing ? "Update" : "Save"}</span>
+                {/* {loading && <SmBtnLoader />} */}
             </button>
+            
         </div>
     </form>
   );

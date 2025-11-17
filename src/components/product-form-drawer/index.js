@@ -78,6 +78,7 @@ export default function ProductFormDrawer({ editing, setEditing, resource, onAdd
           onAdd={onAdd}
           onUpdate={onUpdate}
           extra={extra}
+          setOpen={setOpen}
         />
       </div>
     </div>

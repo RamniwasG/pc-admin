@@ -106,25 +106,29 @@ export default function AdminDashboardComp({ section }) {
 
   // --- Products actions ---
   async function addProduct(payload) {
-    const formData = new FormData();
-    const { title, description, price, stock, categoryId, subcategoryId,
-        brand, size, color, WUnit, weight, image, rating, discount
-    } = payload;
-    formData.append("title", title);
-    formData.append("description", description);
-    formData.append("price", price);
-    formData.append("stock", stock);
-    formData.append("category", categoryId);
-    formData.append("subcategory", subcategoryId);
-    formData.append("brand", brand);
-    formData.append("size", size);
-    formData.append("color", color);
-    formData.append("discount", discount);
-    formData.append("weight", weight + " " + WUnit);
-    formData.append("image", image.name);
-    formData.append("rating", rating);
-    const res = await api.post("/products/add", formData);
-    setProducts((s) => [...s, res.data]);
+    const { categoryId, subcategoryId, images } = payload;
+    setLoading(true);
+    try {
+      // First upload images
+      const formData = new FormData();
+      images.forEach((img) => formData.append("images", img));
+      const { data } = await api.post('/uploads/multiple', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        }
+      })
+      // if success, add product now
+      if(data.success) {
+        const res = await api.post("/products/add", 
+          { ...payload, category: categoryId, subcategory: subcategoryId, images: data.images }
+        );
+        setProducts((s) => [...s, res.data]);
+      }
+      setLoading(false);
+    } catch(error) {
+      setError(error);
+      setLoading(false);
+    }
   }
   async function updateProduct(id, payload) {
     await api.put(`/products/${id}`, payload);

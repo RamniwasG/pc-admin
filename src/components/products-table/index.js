@@ -2,6 +2,7 @@
 import { useState } from "react";
 import { Pencil, Trash2 } from "lucide-react";
 import { capitalizeWords } from "@/utils";
+import Image from "next/image";
 
 export default function ProductsTable({ loading, rows, cols, onDelete, setEditing }) {
   
@@ -68,6 +69,24 @@ export default function ProductsTable({ loading, rows, cols, onDelete, setEditin
                             {item.isActive ? 'active' : 'inactive'}
                             </span>
                         </td>
+                    }
+                    if(key === 'category' || key === 'subcategory') {
+                      return <td key={key} className="px-4 py-2 text-sm text-gray-800">
+                        {key === 'category' ? item?.category?.name : item?.subcategory?.name}
+                      </td>
+                    }
+                    if(key === 'images' && item.images.length > 0) {
+                      return item.images.map((img, idx) => (
+                        <td key={idx} className="w-10 h-10 bg-gray-100 rounded-lg overflow-hidden">
+                          <Image
+                            src={img.url}
+                            width={10}
+                            height={10}
+                            alt="preview"
+                            className="w-full h-10 object-cover hover:cursor-pointer"
+                          />
+                        </td>
+                      ))
                     }
                     return <td key={key} className="px-4 py-2 text-sm text-gray-800">{value}</td>
                 }))}
