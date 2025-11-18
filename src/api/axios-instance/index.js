@@ -3,16 +3,17 @@ import { clearLoginCredentials } from "@/utils";
 import axios from "axios";
 import { redirect } from "next/navigation";
 
-export const useAxios = () => {
-  const api = axios.create({
-    baseURL: "http://localhost:5002/api",
-    timeout: 45000, // 45s
-    headers: { 
-      "Content-Type": "application/json",
-      "Access-Control-Allow-Origin": "*"
-    }
-  });
+export const axiosInstance = axios.create({
+  baseURL: "http://localhost:5002/api",
+  timeout: 45000, // 45s
+  headers: { 
+    "Content-Type": "application/json",
+    "Access-Control-Allow-Origin": "*"
+  }
+});
 
+export const useAxios = () => {
+  const api = axiosInstance;
   api.interceptors.request.use(config => {
     const token = localStorage.getItem('token');
     if (token) config.headers.Authorization = `Bearer ${token}`;

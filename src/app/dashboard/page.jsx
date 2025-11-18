@@ -20,6 +20,8 @@ import { useRouter } from "next/navigation";
 import { getUserToken } from "@/utils";
 import { useAxios } from "@/api/axios-instance";
 import SmBtnLoader from "@/shared/loaders/sm-btn-loader";
+import { useDispatch } from "react-redux";
+import { fetchCategories } from "@/store/slices/categorySlice";
 
 const Dashboard = () => {
   const api = useAxios();
@@ -47,6 +49,7 @@ const Dashboard = () => {
   }
 
   const router = useRouter();
+  const dispatch = useDispatch();
 
   // Auto login if token already exist
   useEffect(() => {
@@ -56,6 +59,7 @@ const Dashboard = () => {
     }
     
     fetchDashboardCounts();
+    dispatch(fetchCategories());
   }, [])
 
   // --- Dashboard data (replace with real API data later)

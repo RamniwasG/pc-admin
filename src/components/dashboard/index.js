@@ -9,20 +9,22 @@ import UsersList from "../users";
 import { sidebarMenuItems } from "@/constants";
 import ConfirmDialog from "@/shared/confirm-dialog";
 import { capitalizeWords } from "@/utils";
+import { useSelector } from "react-redux";
 
 // --- Main Admin Dashboard ---
 export default function AdminDashboardComp({ section }) {
+  const { categories, loading } = useSelector((s) => s.category);
   const [active, setActive] = useState(section); // categories | subcategories | products | orders
   const api = useAxios();
   // local state for lists
-  const [categories, setCategories] = useState([]);
+  const [totalCategories, setTotalCategories] = useState(categories);
   const [subcategories, setSubcategories] = useState([]);
   const [products, setProducts] = useState([]);
   const [users, setUsers] = useState([]);
   const [orders, setOrders] = useState([]);
 
   // loading & editing states
-  const [loading, setLoading] = useState(false);
+  const [loadings, setLoading] = useState(false);
   const [editing, setEditing] = useState(null); // item being edited
   const [open, setOpen] = useState(false);
   const [selectedId, setSelectedId] = useState('');
@@ -35,7 +37,7 @@ export default function AdminDashboardComp({ section }) {
       const { data } = await api.get(`/${section === 'users' ? 'auth' : section}/fetchAll${capitalizeWords(section)}`);
       switch(section) {
         case 'categories':
-          setCategories(data.categories);
+          setTotalCategories(data.categories);
           break;
         case 'subcategories':
           setSubcategories(data.subcategories);
@@ -64,7 +66,7 @@ export default function AdminDashboardComp({ section }) {
   async function addCategory(payload) {
     try {
       const res = await api.post("/categories/add", payload);
-      setCategories((s) => [...s, res.data]);
+      setTotalCategories((s) => [...s, res.data]);
     } catch(error) {
       setError(error);
     }
@@ -230,7 +232,7 @@ export default function AdminDashboardComp({ section }) {
           <ResourceManager
             resource="categories"
             loading={loading}
-            items={categories}
+            items={totalCategories}
             onAdd={addCategory}
             onUpdate={updateCategory}
             onDelete={deleteItem}
@@ -244,7 +246,7 @@ export default function AdminDashboardComp({ section }) {
             resource="subcategories"
             loading={loading}
             items={subcategories}
-            extra={{ categories }}
+            extra={{ totalCategories }}
             onAdd={addSub}
             onUpdate={updateSub}
             onDelete={deleteItem}
@@ -258,7 +260,7 @@ export default function AdminDashboardComp({ section }) {
             resource="products"
             loading={loading}
             items={products}
-            extra={{ categories, subcategories }}
+            extra={{ totalCategories, subcategories }}
             onAdd={addProduct}
             onUpdate={updateProduct}
             onDelete={deleteItem}
