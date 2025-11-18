@@ -50,25 +50,25 @@ export default function ProductsTable({ loading, rows, cols, onDelete, setEditin
                   {Object.keys(item).filter(k => k !== '_id' && k !== '__v').map((key => {
                     let value = item[key];
                     if(Array.isArray(value) && value.length > 0) {
-                        value = value.join(', ');
+                      value = value.join(', ');
                     } else if(Array.isArray(value) && value.length === 0) {
-                        value = '--';
+                      value = '--';
                     } else if(typeof value === 'boolean') {
-                        value = value || '--';
+                      value = value || '--';
                     }
 
                     if(key === 'isActive' || key === 'isFeatured') {
-                        return <td key={key} className="px-4 py-2 text-sm">
-                            <span
-                            className={`px-2 py-1 rounded-full text-xs font-medium ${
-                                !item.isActive
-                                ? "bg-red-100 text-red-700"
-                                : "bg-green-100 text-green-700"
-                            }`}
-                            >
-                            {item.isActive ? 'active' : 'inactive'}
-                            </span>
-                        </td>
+                      return <td key={key} className="px-4 py-2 text-sm">
+                        <span
+                          className={`px-2 py-1 rounded-full text-xs font-medium ${
+                              !item.isActive
+                              ? "bg-red-100 text-red-700"
+                              : "bg-green-100 text-green-700"
+                          }`}
+                          >
+                          {item.isActive ? 'active' : 'inactive'}
+                        </span>
+                      </td>
                     }
                     if(key === 'category' || key === 'subcategory') {
                       return <td key={key} className="px-4 py-2 text-sm text-gray-800">
@@ -88,7 +88,10 @@ export default function ProductsTable({ loading, rows, cols, onDelete, setEditin
                         </td>
                       ))
                     }
-                    return <td key={key} className="px-4 py-2 text-sm text-gray-800">{value}</td>
+                    if(['size', 'color', 'images', 'tags'].includes(key) && value.length === 0) {
+                      return <td key={key} className="px-4 py-2 text-sm text-gray-800">N/A</td>
+                    }
+                    return <td key={key} className="px-4 py-2 text-sm text-gray-800">{value || 'N/A'}</td>
                 }))}
                   
                   

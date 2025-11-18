@@ -19,6 +19,7 @@ import {
 import { useRouter } from "next/navigation";
 import { getUserToken } from "@/utils";
 import { useAxios } from "@/api/axios-instance";
+import SmBtnLoader from "@/shared/loaders/sm-btn-loader";
 
 const Dashboard = () => {
   const api = useAxios();
@@ -37,7 +38,6 @@ const Dashboard = () => {
     setLoading(true);
     try {
       const { data } = await api.get("/dashboard/counts");
-      console.log(data);
       setData(data);
     } catch (e) {
       console.error(e);
@@ -109,7 +109,7 @@ const Dashboard = () => {
   return (
     <>
       {/* Summary Cards */}
-      {loading && <p className="text-md">Loading...</p>}
+      {/* {loading && <p className="text-md">Loading...</p>} */}
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 mb-10">
         {totals.map((item, index) => (
           <div
@@ -119,9 +119,10 @@ const Dashboard = () => {
           >
             <div>
               <p className="sm:text-md lg:text-xl">{item.label}</p>
-              <h2 className="text-2xl font-bold text-gray-600">
+              {loading && <SmBtnLoader />}
+              {!loading && <h2 className="text-2xl font-bold text-gray-600">
                 {item.value}
-              </h2>
+              </h2>}
             </div>
             <div
               className={`w-12 h-12 rounded-full flex items-center justify-center text-white ${item.color}`}
