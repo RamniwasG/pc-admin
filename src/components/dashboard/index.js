@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { useAxios } from "@/api/axios-instance";
 import SidebarButton from "@/components/sidebar-btn";
 import ResourceManager from "@/components/resource-mgr";
@@ -8,6 +8,7 @@ import GoBack from "@/components/go-back";
 import UsersList from "../users";
 import { sidebarMenuItems } from "@/constants";
 import ConfirmDialog from "@/shared/confirm-dialog";
+import { capitalizeWords } from "@/utils";
 
 // --- Main Admin Dashboard ---
 export default function AdminDashboardComp({ section }) {
@@ -27,32 +28,37 @@ export default function AdminDashboardComp({ section }) {
   const [selectedId, setSelectedId] = useState('');
   const [error, setError] = useState('');
 
-  // fetch lists
-  async function fetchAll() {
+  // fetch lists by selected section
+  const fetchItemsBySection = useCallback(async() => {
     setLoading(true);
     try {
-      const [cats, subs, prods, users] = await Promise.all([
-        api.get("/categories/fetchAllCategories").then((r) => r.data),
-        api.get("/subcategories/fetchAllSubCategories").then((r) => r.data),
-        api.get("/products/fetchAllProducts").then((r) => r.data),
-        api.get("/auth/fetchAllUsers").then((r) => r.data),
-        // api.get("/orders/getAll").then((r) => r.data),
-      ]);
-      setCategories(cats);
-      setSubcategories(subs);
-      setProducts(prods);
-      setUsers(users);
-      // setOrders(ords);
+      const { data } = await api.get(`/${section === 'users' ? 'auth' : section}/fetchAll${capitalizeWords(section)}`);
+      switch(section) {
+        case 'categories':
+          setCategories(data.categories);
+          break;
+        case 'subcategories':
+          setSubcategories(data.subcategories);
+          break;
+        case 'products':
+          setProducts(data.products);
+          break;
+        case 'orders':
+          setOrders(data.orders);
+          break;
+        default:
+          setUsers(data.users);
+      }
     } catch (e) {
       console.error(e);
       setError(e);
     }
     setLoading(false);
-  }
+  }, []);
 
   useEffect(() => {
-    fetchAll();
-  }, []);
+    fetchItemsBySection();
+  }, [fetchItemsBySection]);
 
   // --- Category actions ---
   async function addCategory(payload) {
@@ -71,17 +77,42 @@ export default function AdminDashboardComp({ section }) {
       setError(error);
     }
   }
-  async function deleteCategory(id) {
+  async function deleteItem(id) {
     setOpen(true);
     setSelectedId(id);
   }
 
   async function handleDelete() {
+    switch(section) {
+      case 'categories':
+        await deleteCategory();
+        break;
+      case 'subcategories':
+        await deleteSubCategory();
+        break;
+      case 'products':
+        await deleteProduct();
+        break;
+      case 'orders':
+        await deleteOrder();
+        break;
+      default:
+        await deleteUser();
+    }
+  }
+
+  function clearIdAndCloseModel() {
+    setOpen(false);
+    setSelectedId(null);
+  }
+
+  async function deleteCategory() {
     try {
       await api.delete(`/categories/${selectedId}`);
       setCategories((s) => s.filter((c) => c._id !== selectedId));
+      clearIdAndCloseModel();
       // refresh dependant lists
-      fetchAll();
+      // fetchAll();
     } catch(err) {
       setError(err);
     }
@@ -97,11 +128,15 @@ export default function AdminDashboardComp({ section }) {
     await api.put(`/subcategories/${id}`, payloadData);
     setSubcategories((s) => s.map((c) => (c._id === id ? { ...c, ...payload } : c)));
   }
-  async function deleteSub(id) {
-    if (!confirm("Delete subcategory?")) return;
-    await api.delete(`/subcategories/${id}`);
-    setSubcategories((s) => s.filter((c) => c._id !== id));
-    fetchAll();
+  async function deleteSubCategory() {
+    try {
+      await api.delete(`/subcategories/${selectedId}`);
+      setSubcategories((s) => s.filter((c) => c._id !== selectedId));
+      clearIdAndCloseModel();
+      // fetchAll();
+    } catch(error) {
+      setError(error);
+    }
   }
 
   // --- Products actions ---
@@ -134,10 +169,14 @@ export default function AdminDashboardComp({ section }) {
     await api.put(`/products/${id}`, payload);
     setProducts((s) => s.map((p) => (p._id === id ? { ...p, ...payload } : p)));
   }
-  async function deleteProduct(id) {
-    if (!confirm("Delete product?")) return;
-    await api.delete(`/products/${id}`);
-    setProducts((s) => s.filter((p) => p._id !== id));
+  async function deleteProduct() {
+    try {
+      await api.delete(`/products/${selectedId}`);
+      setProducts((s) => s.filter((p) => p._id !== selectedId));
+      clearIdAndCloseModel();
+    } catch(err) {
+      setError(err);
+    }
   }
 
   // --- Users actions ---
@@ -158,10 +197,11 @@ export default function AdminDashboardComp({ section }) {
     await api.put(`/auth/update-profile/${id}`, { email, phone, role, isActive: isActive === 'active' ? true : false });
     setUsers((s) => s.map((u) => (u._id === id ? { ...u, ...payload } : u)));
   }
-  async function deleteUser(id) {
+  async function deleteUser() {
     try {
-      await api.delete(`/auth/remove/${id}`);
-      setUsers((s) => s.filter((u) => u._id !== id));
+      await api.delete(`/auth/remove/${selectedId}`);
+      setUsers((s) => s.filter((u) => u._id !== selectedId));
+      clearIdAndCloseModel();
     } catch(error) {
       setError(error);
     }
@@ -171,6 +211,15 @@ export default function AdminDashboardComp({ section }) {
   async function createOrder(payload) {
     const res = await api.post("/orders", payload);
     setOrders((s) => [...s, res.data]);
+  }
+  async function deleteOrder() {
+    try {
+      await api.delete(`/orders/${selectedId}`);
+      setOrders((s) => s.filter((u) => u._id !== selectedId));
+      clearIdAndCloseModel();
+    } catch(error) {
+      setError(error);
+    }
   }
 
   // --- UI helper: render right panel per active ---
@@ -184,7 +233,7 @@ export default function AdminDashboardComp({ section }) {
             items={categories}
             onAdd={addCategory}
             onUpdate={updateCategory}
-            onDelete={deleteCategory}
+            onDelete={deleteItem}
             editing={editing}
             setEditing={setEditing}
           />
@@ -198,7 +247,7 @@ export default function AdminDashboardComp({ section }) {
             extra={{ categories }}
             onAdd={addSub}
             onUpdate={updateSub}
-            onDelete={deleteSub}
+            onDelete={deleteItem}
             editing={editing}
             setEditing={setEditing}
           />
@@ -212,7 +261,7 @@ export default function AdminDashboardComp({ section }) {
             extra={{ categories, subcategories }}
             onAdd={addProduct}
             onUpdate={updateProduct}
-            onDelete={deleteProduct}
+            onDelete={deleteItem}
             editing={editing}
             setEditing={setEditing}
           />
@@ -237,13 +286,35 @@ export default function AdminDashboardComp({ section }) {
     }
   }
 
+  const getDialogTitle = (section) => {
+    let title = 'Delete '
+    switch(section) {
+      case 'categories':
+        title += 'Category'
+        break;
+      case 'subcategories':
+        title += 'Subcategory'
+        break;
+      case 'products':
+        title += 'Product'
+        break;
+      case 'orders':
+        title += 'Order'
+        break;
+      default:
+        title += 'User'
+    }
+
+    return title;
+  }
+
   return (<>
     <ConfirmDialog
       open={open}
       onClose={() => setOpen(false)}
       onConfirm={handleDelete}
-      title="Delete User?"
-      message="This action cannot be undone."
+      title={getDialogTitle(section)}
+      message="Do you really want to delete this?"
     />
     <div className="bg-gray-50">
       <GoBack href="/dashboard" label="Back" classes="mb-0 px-2" />

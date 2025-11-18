@@ -12,7 +12,7 @@ function ResourceList({title, loading, items, editing, onEdit, onDelete }) {
   let categoriesList = []
   if(section === 'subcategories' && items.length > 0) {
     items.forEach((i) => {
-      const exist = categoriesList.find(c => c._id === i.category._id)
+      const exist = categoriesList.find(c => c?._id === i?.category?._id)
       if(!exist) {
         categoriesList.push(i.category);
       }

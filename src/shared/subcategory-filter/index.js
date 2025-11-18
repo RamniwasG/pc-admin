@@ -58,9 +58,9 @@ export default function SubcategoryFilter({
           className="flex-1 rounded-md border border-gray-300 bg-white px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500"
         >
           <option value="" disabled>{placeholderCategory}</option>
-          {categories.map((cat) => (
-            <option key={cat._id} value={cat._id}>
-              {cat.name}
+          {categories.length > 0 && categories.map((cat) => (
+            <option key={cat?._id} value={cat?._id}>
+              {cat?.name}
             </option>
           ))}
         </select>

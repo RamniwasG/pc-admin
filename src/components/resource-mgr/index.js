@@ -61,7 +61,7 @@ function ResourceManager({ resource, loading, items, extra = {}, onAdd, onUpdate
           items={items}
           editing={editing}
           onEdit={startEdit}
-          onDelete={(it) => onDelete(it._id)}
+          onDelete={onDelete}
           renderSub={(it) => {
             if (isProduct) {
               const cat = extra.categories?.find((c) => c._id === it.category)?.name || "-";
