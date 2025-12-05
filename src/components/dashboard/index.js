@@ -260,7 +260,7 @@ export default function AdminDashboardComp({ section }) {
             resource="products"
             loading={loading}
             items={products}
-            extra={{ totalCategories, subcategories }}
+            extra={{ categories: totalCategories, subcategories }}
             onAdd={addProduct}
             onUpdate={updateProduct}
             onDelete={deleteItem}

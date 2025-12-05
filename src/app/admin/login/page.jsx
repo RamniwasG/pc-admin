@@ -99,20 +99,20 @@ const AdminLogin = () => {
   };
 
   return (
-    <div className={`flex flex-col min-h-screen items-center ${sentPasscode ? 'justify-start' : 'justify-center'} sm:justify-start bg-gray-100`}>
+    <div className={`flex flex-col min-h-screen items-center ${sentPasscode ? 'justify-start' : 'justify-center'} bg-gray-100`}>
       <div>
         <Image
           src='/logo.png'
           width={100}
           height={100}
-          className="w-[120px] sm:w-[160px] h-[120px] sm:h-[160px] rounded-full"
+          className="w-[160px] sm:w-[80px] h-[160px] sm:h-[80px] rounded-full"
           alt="app logo"
           priority={true}
         />
       </div>
-      <div className="w-full max-w-md bg-white shadow-lg rounded-2xl p-8">
+      <div className="w-full max-w-sm bg-white shadow-lg rounded-lg p-8">
           <div className="flex flex-col items-center mb-3">
-            {sentPasscode ? <ShieldCheck className="w-9 h-9 text-indigo-600 mb-2" /> : <LogInIcon className="w-9 h-9 text-indigo-600 mb-2" />}
+            {sentPasscode ? <ShieldCheck className="w-9 h-9 text-indigo-600 mb-2" /> : ''}
             <h2 className="text-2xl font-semibold text-gray-800">{sentPasscode ? 'Verify Security Code' : 'Admin Login'}</h2>
             {/* <p className="text-sm text-gray-500">Access your dashboard</p> */}
           </div>
@@ -198,7 +198,7 @@ const AdminLogin = () => {
             <button
               type="submit"
               disabled={loading}
-              className={`w-full flex items-center justify-center mt-3 gap-2 ${sentPasscode ? 'bg-pink-500' : 'bg-amber-600'} hover:bg-orange-500 hover:border-0 text-white font-medium py-2 rounded-lg transition`}
+              className={`w-full flex items-center justify-center mt-5 gap-2 ${sentPasscode ? 'bg-pink-500' : 'bg-amber-600'} hover:bg-orange-500 hover:border-0 text-white font-medium py-2 rounded-lg transition`}
             >
               {loading ? (
                 <span className="animate-pulse">{sentPasscode ? 'Verifying' : 'Sending'}...</span>
