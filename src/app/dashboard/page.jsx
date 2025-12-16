@@ -114,7 +114,7 @@ const Dashboard = () => {
     <>
       {/* Summary Cards */}
       {/* {loading && <p className="text-md">Loading...</p>} */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 mb-10">
+      <div className="grid grid-cols-1 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 sm:gap-2 gap-3 mb-4">
         {totals.map((item, index) => (
           <div
             key={index}
@@ -138,7 +138,7 @@ const Dashboard = () => {
       </div>
 
       {/* Chart + Table */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+      <div className="grid grid-cols-1 lg:grid-cols-3 sm:gap-2 gap-3">
         {/* Pie Chart */}
         <div className="bg-white border border-gray-100 rounded-xl shadow-sm p-6">
           <h3 className="text-lg font-semibold text-gray-700 mb-4">
