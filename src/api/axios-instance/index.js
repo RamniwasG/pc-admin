@@ -4,7 +4,7 @@ import axios from "axios";
 import { redirect } from "next/navigation";
 
 export const axiosInstance = axios.create({
-  baseURL: "http://localhost:5002/api",
+  baseURL: process.env.NEXT_PUBLIC_API_URL,
   timeout: 45000, // 45s
   headers: { 
     "Content-Type": "application/json",
