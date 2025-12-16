@@ -56,7 +56,7 @@ const AdminLogin = () => {
       }
     } catch (err) {
       setError(
-        err.response?.data?.message || "Invalid email or server error"
+        err.response?.data?.message || "Internal server error"
       );
     } finally {
       setLoading(false);
